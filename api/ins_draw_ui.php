@@ -1,0 +1,63 @@
+ <?php
+echo main();
+//期數賠率 補生成
+function main(){
+	$aHtml=array();
+	$aHtml[]='<html>';
+	$aHtml[]='<head>';
+	$aHtml[]='<script type="text/javascript" src="../js/jquery-3.1.1.min.js"></script>';
+	$aHtml[]='<script type="text/javascript" src="../js/main.js"></script>';
+	$aHtml[]='<script>';
+	$aHtml[]='document.oncontextmenu = new Function("return false");';
+	$aHtml[]='</script>';
+	$aHtml[]='<meta content="text/html charset=utf-8" http-equiv="Content-Type"/>';
+	$aHtml[]='<style type ="text/css">';
+	$aHtml[]='ul{';
+	$aHtml[]='padding:0px 0px 0px 0px';
+	$aHtml[]='list-style-type:none'; 
+	$aHtml[]='}';
+	$aHtml[]='h1{';
+  $aHtml[]='background-size: 40px';
+	$aHtml[]='padding:0px 0px 0px 45px';
+	$aHtml[]='color:#000373';
+	$aHtml[]='font-size:48px';
+	$aHtml[]='text-shadow: 0px 0px 6px rgba(255,255,255,0.7)';
+	$aHtml[]='font-weight:bold';
+	$aHtml[]='}';
+	$aHtml[]='</style>';
+	$aHtml[]='</head>';
+	$aHtml[]='<body bgcolor=#ECFFFF>';
+	$aHtml[]='<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>';
+	$aHtml[]='<div>';
+	$aHtml[]='<h1>生成期數</h1>';
+	$aHtml[]='使用方法:';
+	$aHtml[]='<ul>';
+	$aHtml[]='<li>';
+	$aHtml[]='監控站 顯示錯誤 [期數未生成] 時才能使用';
+	$aHtml[]='</li>';
+	$aHtml[]='<li>';
+	$aHtml[]='選擇 彩票類型 點執行';
+	$aHtml[]='</li>';
+	$aHtml[]='<li>';
+	$aHtml[]='如果有期數 就不執行';
+	$aHtml[]='</li>';
+	$aHtml[]='</ul>';
+	$aHtml[]='<div>';
+	$aHtml[]='<form id="ins_draws" method="post">';
+	$aHtml[]='彩票類型';
+	$aHtml[]='<select name="g"></br></br>';
+	$aHtml[]='<option value="klc">klc</option>';
+	$aHtml[]='<option value="ssc">ssc</option>';
+	$aHtml[]='<option value="pk">pk</option>';
+	$aHtml[]='<option value="nc">nc</option>';
+	$aHtml[]='<option value="kb">kb</option>';
+	$aHtml[]='</select>';
+	$aHtml[]='<input type="button" onclick="run_ins_draws();" value="執行">';
+	$aHtml[]='</form>';
+	$aHtml[]='</div>';
+	$aHtml[]='</body>';
+	$aHtml[]='</html>';
+	$sHtml=implode(' ',$aHtml);
+	return $sHtml;
+}
+?>

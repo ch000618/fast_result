@@ -1,0 +1,22 @@
+<?php
+$_SERVER['HTTP_HOST']='console_c';
+include_once('../../config/connect.php');
+include_once($web_cfg['path_lib'].'func.pub.util.php');
+include_once($web_cfg['path_lib'].'class.db.PDO.php');
+include_once($web_cfg['path_lib'].'func.ser_result.php');
+include_once($web_cfg['path_lib'].'func.ser_result_site_table.php');
+include_once($web_cfg['path_lib'].'func.operation_record.php');
+include_once($web_cfg['path_lib'].'func.ser_init.php');
+//狀態3 將開獎結果新增到資料庫
+/*
+*檢查狀態
+*如果狀態是3
+*新增開獎結果
+*狀態改成1
+*/
+$db=mke_pdo_link($insert_db);
+$db_s=mke_pdo_link($select_db);
+$sGame='nc';
+//inst_lt_result($sGame);
+inst_lt_result_v3($sGame);
+?>

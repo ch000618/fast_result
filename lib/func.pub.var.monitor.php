@@ -1,0 +1,465 @@
+<?php
+//現場監督玩法與項目的翻譯
+/*
+  $_aMonitor_play_item[遊戲編號][頁面][playtype_number]=資料庫玩法_資料庫項目
+*/
+$_aMonitor_play_item=array();
+//===KLC===
+$_aMonitor_play_item[11]=array();
+$_aMonitor_play_item[11]['sumDT']=array();
+$_aMonitor_play_item[11]['sumDT']['040_29']='140_O';
+$_aMonitor_play_item[11]['sumDT']['040_30']='140_E';
+$_aMonitor_play_item[11]['sumDT']['041_31']='141_L';
+$_aMonitor_play_item[11]['sumDT']['041_32']='141_S';
+$_aMonitor_play_item[11]['sumDT']['042_33']='142_L';
+$_aMonitor_play_item[11]['sumDT']['042_34']='142_S';
+$_aMonitor_play_item[11]['ball1']=array();
+$_aMonitor_play_item[11]['ball2']=array();
+$_aMonitor_play_item[11]['ball3']=array();
+$_aMonitor_play_item[11]['ball4']=array();
+$_aMonitor_play_item[11]['ball5']=array();
+$_aMonitor_play_item[11]['ball6']=array();
+$_aMonitor_play_item[11]['ball7']=array();
+$_aMonitor_play_item[11]['ball8']=array();
+$_aMonitor_play_item[11]['evenCode']=array();
+//01~20
+for($i=1;$i<=20;$i++){
+  $sI=($i<10)?'0'.$i:$i;
+  $_aMonitor_play_item[11]['sumDT']['075_'.$sI]='175_'.$i;
+  $_aMonitor_play_item[11]['ball1']['000_'.$sI]='100_'.$i;
+  $_aMonitor_play_item[11]['ball2']['001_'.$sI]='101_'.$i;
+  $_aMonitor_play_item[11]['ball3']['002_'.$sI]='102_'.$i;
+  $_aMonitor_play_item[11]['ball4']['003_'.$sI]='103_'.$i;
+  $_aMonitor_play_item[11]['ball5']['004_'.$sI]='104_'.$i;
+  $_aMonitor_play_item[11]['ball6']['005_'.$sI]='105_'.$i;
+  $_aMonitor_play_item[11]['ball7']['006_'.$sI]='106_'.$i;
+  $_aMonitor_play_item[11]['ball8']['007_'.$sI]='107_'.$i;
+}
+//第?球單雙
+for($i=8;$i<=15;$i++){
+  $ball=$i-7;
+  $sI=($i<10)?'0'.$i:$i;
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_21']='1'.$sI.'_O';
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_22']='1'.$sI.'_E';
+}
+//第?球大小
+for($i=16;$i<=23;$i++){
+  $ball=$i-15;
+  $sI=($i<10)?'0'.$i:$i;
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_23']='1'.$sI.'_L';
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_24']='1'.$sI.'_S';
+}
+//第?球尾大小
+for($i=24;$i<=31;$i++){
+  $ball=$i-23;
+  $sI=($i<10)?'0'.$i:$i;
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_25']='1'.$sI.'_L';
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_26']='1'.$sI.'_S';
+}
+//第?球合單雙
+for($i=32;$i<=39;$i++){
+  $ball=$i-31;
+  $sI=($i<10)?'0'.$i:$i;
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_27']='1'.$sI.'_O';
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_28']='1'.$sI.'_E';
+}
+/* //因為跟畫面不一樣 就給他一條
+  $_aMonitor_play_item[11]['ball8']['038_27']='139_O';
+  $_aMonitor_play_item[11]['ball8']['038_28']='139_E'; */
+//第?球中發白-中
+for($i=39;$i<=46;$i++){
+  $ball=$i-38;
+  $sI=($i<10)?'0'.$i:$i;
+	//畫面傳的值跟資料庫不一樣
+	//畫面傳的是039-046 但是資料庫 都屬於143底下的項目
+  $sJ=$i+4;
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_35']='1'.$sJ.'_C';
+}
+//第?球中發白-發白
+for($i=43;$i<=50;$i++){
+  $ball=$i-42;
+  $sI=($i<10)?'0'.$i:$i;
+	$iDT=16+$i;
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_36']='1'.$sI.'_F';
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_37']='1'.$sI.'_B';
+	$_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_42']='1'.$iDT.'_D';
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_43']='1'.$iDT.'_T';
+}
+//第?球方位
+for($i=51;$i<=56;$i++){
+  $ball=$i-50;
+  $sI=($i<10)?'0'.$i:$i;
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_38']='1'.$sI.'_E';
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_39']='1'.$sI.'_S';
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_40']='1'.$sI.'_W';
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_41']='1'.$sI.'_N';
+}
+	$ball=8;
+	$sI=60;
+	$sJ=58;
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_38']='1'.$sJ.'_E';
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_39']='1'.$sJ.'_S';
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_40']='1'.$sJ.'_W';
+  $_aMonitor_play_item[11]['ball'.$ball]['0'.$sI.'_41']='1'.$sJ.'_N'; 
+	$ball=7;
+	$sJ=57;
+	$_aMonitor_play_item[11]['ball'.$ball]['057_38']='1'.$sJ.'_E';
+	$_aMonitor_play_item[11]['ball'.$ball]['058_39']='1'.$sJ.'_S';
+  $_aMonitor_play_item[11]['ball'.$ball]['059_40']='1'.$sJ.'_W';
+  $_aMonitor_play_item[11]['ball'.$ball]['059_41']='1'.$sJ.'_N'; 
+//連碼
+$_aMonitor_play_item[11]['evenCode']['061_']='167_0';//任選二
+$_aMonitor_play_item[11]['evenCode']['063_']='168_0';//選二聯組
+$_aMonitor_play_item[11]['evenCode']['064_']='170_0';//任選三
+$_aMonitor_play_item[11]['evenCode']['066_']='171_0';//選三前組
+$_aMonitor_play_item[11]['evenCode']['067_']='173_0';//任選四
+$_aMonitor_play_item[11]['evenCode']['068_']='174_0';//任選五
+//===SSC===
+$_aMonitor_play_item[12]=array();
+$_aMonitor_play_item[12]['']=array();
+//0~9
+for($i=0;$i<=9;$i++){
+  $_aMonitor_play_item[12]['']['000_'.$i]='200_'.$i;
+  $_aMonitor_play_item[12]['']['001_'.$i]='201_'.$i;
+  $_aMonitor_play_item[12]['']['002_'.$i]='202_'.$i;
+  $_aMonitor_play_item[12]['']['003_'.$i]='203_'.$i;
+  $_aMonitor_play_item[12]['']['004_'.$i]='204_'.$i;
+}
+//單雙大小
+for($i=5;$i<=9;$i++){
+  $iPlayOE=220+$i;
+  $iPlayLS=225+$i;
+  $sI=($i<10)?'0'.$i:$i;
+  $_aMonitor_play_item[12]['']['0'.$sI.'_0']=$iPlayOE.'_O';
+  $_aMonitor_play_item[12]['']['0'.$sI.'_1']=$iPlayOE.'_E';
+  $_aMonitor_play_item[12]['']['0'.$sI.'_2']=$iPlayLS.'_L';
+  $_aMonitor_play_item[12]['']['0'.$sI.'_3']=$iPlayLS.'_S';
+}
+//總和
+$_aMonitor_play_item[12]['']['010_2']='206_L';
+$_aMonitor_play_item[12]['']['010_3']='206_S';
+$_aMonitor_play_item[12]['']['010_0']='205_O';
+$_aMonitor_play_item[12]['']['010_1']='205_E';
+//龍虎和
+$_aMonitor_play_item[12]['']['011_0']='207_D';
+$_aMonitor_play_item[12]['']['012_0']='208_T';
+$_aMonitor_play_item[12]['']['013_0']='209_B';
+//前三,中三,後三
+$_aMonitor_play_item[12]['']['014_0']='210_4';
+$_aMonitor_play_item[12]['']['015_0']='211_4';
+$_aMonitor_play_item[12]['']['016_0']='212_4';
+
+$_aMonitor_play_item[12]['']['017_0']='213_3';
+$_aMonitor_play_item[12]['']['018_0']='214_3';
+$_aMonitor_play_item[12]['']['019_0']='215_3';
+
+$_aMonitor_play_item[12]['']['020_0']='216_2';
+$_aMonitor_play_item[12]['']['021_0']='217_2';
+$_aMonitor_play_item[12]['']['022_0']='218_2';
+
+$_aMonitor_play_item[12]['']['023_0']='219_1';
+$_aMonitor_play_item[12]['']['024_0']='220_1';
+$_aMonitor_play_item[12]['']['025_0']='221_1';
+
+$_aMonitor_play_item[12]['']['026_0']='222_0';
+$_aMonitor_play_item[12]['']['027_0']='223_0';
+$_aMonitor_play_item[12]['']['028_0']='224_0';
+
+/*
+//前三,中三,後三
+for($i1=0;$i1<3;$i1++){
+  for($i2=0;$i2<5;$i2++){
+    $iPlaytype=14+($i1*5)+$i2;//POST
+    $iPtype=210+($i1*5)+$i2;//資料庫
+		
+    $_aMonitor_play_item[12]['']['0'.$iPlaytype.'_0']=$iPtype.'_'.$i2;
+	}
+}
+*/
+//===北京賽車===
+$_aMonitor_play_item[13]=array();
+$_aMonitor_play_item[13]['li1_pk10']=array();//冠亞軍組合
+$_aMonitor_play_item[13]['li2_pk10']=array();//1~5
+$_aMonitor_play_item[13]['li3_pk10']=array();//6~10
+//冠亞和
+for($i=3;$i<=19;$i++){
+  $_aMonitor_play_item[13]['li1_pk10']['037_'.$i]='337_'.$i;
+}
+//兩面
+$_aMonitor_play_item[13]['li1_pk10']['035_0']='335_L';
+$_aMonitor_play_item[13]['li1_pk10']['035_1']='335_S';
+$_aMonitor_play_item[13]['li1_pk10']['036_0']='336_O';
+$_aMonitor_play_item[13]['li1_pk10']['036_1']='336_E';
+//1~10
+for($i=1;$i<=10;$i++){
+  $_aMonitor_play_item[13]['li2_pk10']['000_'.$i]='300_'.$i;
+  $_aMonitor_play_item[13]['li2_pk10']['001_'.$i]='301_'.$i;
+  $_aMonitor_play_item[13]['li2_pk10']['002_'.$i]='302_'.$i;
+  $_aMonitor_play_item[13]['li2_pk10']['003_'.$i]='303_'.$i;
+  $_aMonitor_play_item[13]['li2_pk10']['004_'.$i]='304_'.$i;
+  $_aMonitor_play_item[13]['li3_pk10']['005_'.$i]='305_'.$i;
+  $_aMonitor_play_item[13]['li3_pk10']['006_'.$i]='306_'.$i;
+  $_aMonitor_play_item[13]['li3_pk10']['007_'.$i]='307_'.$i;
+  $_aMonitor_play_item[13]['li3_pk10']['008_'.$i]='308_'.$i;
+  $_aMonitor_play_item[13]['li3_pk10']['009_'.$i]='309_'.$i;
+}
+//單雙大小龍虎
+//1~5
+for($i=10;$i<=14;$i++){
+  $iOE=10+$i;
+  $iLS=$i;
+  $iDT=20+$i;
+  $_aMonitor_play_item[13]['li2_pk10']['0'.$iOE.'_0']='3'.$iOE.'_O';
+  $_aMonitor_play_item[13]['li2_pk10']['0'.$iOE.'_1']='3'.$iOE.'_E';
+  $_aMonitor_play_item[13]['li2_pk10']['0'.$iLS.'_0']='3'.$iLS.'_L';
+  $_aMonitor_play_item[13]['li2_pk10']['0'.$iLS.'_1']='3'.$iLS.'_S';
+  $_aMonitor_play_item[13]['li2_pk10']['0'.$iDT.'_0']='3'.$iDT.'_D';
+  $_aMonitor_play_item[13]['li2_pk10']['0'.$iDT.'_1']='3'.$iDT.'_T';
+}
+//6~10
+for($i=15;$i<=19;$i++){
+  $iOE=10+$i;
+  $iLS=$i;
+  $_aMonitor_play_item[13]['li3_pk10']['0'.$iOE.'_0']='3'.$iOE.'_O';
+  $_aMonitor_play_item[13]['li3_pk10']['0'.$iOE.'_1']='3'.$iOE.'_E';
+  $_aMonitor_play_item[13]['li3_pk10']['0'.$iLS.'_0']='3'.$iLS.'_L';
+  $_aMonitor_play_item[13]['li3_pk10']['0'.$iLS.'_1']='3'.$iLS.'_S';
+}
+//===幸運農場===
+$_aMonitor_play_item[14]=$_aMonitor_play_item[11];
+$_aMonitor_play_item[14]['evenCode']=array();
+$_aMonitor_play_item[14]['evenCode']=array();
+//連碼
+$_aMonitor_play_item[14]['evenCode']['062_']='167_0';
+$_aMonitor_play_item[14]['evenCode']['064_']='169_0';
+$_aMonitor_play_item[14]['evenCode']['063_']='168_0';
+$_aMonitor_play_item[14]['evenCode']['065_']='170_0';
+$_aMonitor_play_item[14]['evenCode']['074_']='171_0';
+$_aMonitor_play_item[14]['evenCode']['068_']='173_0';
+$_aMonitor_play_item[14]['evenCode']['069_']='174_0';
+//===快8===
+$_aMonitor_play_item[15]=array();
+$_aMonitor_play_item[15]['sumDT']=array();
+$_aMonitor_play_item[15]['ball']=array();
+$_aMonitor_play_item[15]['sumDT']['001_01']='501_L';//總和大小
+$_aMonitor_play_item[15]['sumDT']['002_01']='501_S';
+$_aMonitor_play_item[15]['sumDT']['003_01']='502_O';//總和單雙
+$_aMonitor_play_item[15]['sumDT']['004_01']='502_E';
+$_aMonitor_play_item[15]['sumDT']['005_01']='503_D';//總和810
+$_aMonitor_play_item[15]['sumDT']['006_01']='505_LO';//總和大單雙
+$_aMonitor_play_item[15]['sumDT']['007_01']='505_LE';
+$_aMonitor_play_item[15]['sumDT']['008_01']='506_SO';//總和小單雙
+$_aMonitor_play_item[15]['sumDT']['009_01']='506_SE';
+$_aMonitor_play_item[15]['sumDT']['010_01']='507_F';//前後和
+$_aMonitor_play_item[15]['sumDT']['011_01']='507_B';
+$_aMonitor_play_item[15]['sumDT']['012_01']='507_D';
+$_aMonitor_play_item[15]['sumDT']['013_01']='508_O';//單雙和
+$_aMonitor_play_item[15]['sumDT']['014_01']='508_E';
+$_aMonitor_play_item[15]['sumDT']['015_01']='508_D';
+$_aMonitor_play_item[15]['sumDT']['016_01']='509_1';//五行
+$_aMonitor_play_item[15]['sumDT']['016_02']='509_2';
+$_aMonitor_play_item[15]['sumDT']['016_03']='509_3';
+$_aMonitor_play_item[15]['sumDT']['016_04']='509_4';
+$_aMonitor_play_item[15]['sumDT']['016_05']='509_5';
+for($i=1;$i<=80;$i++){
+  $sI=($i<10)?'0'.$i:$i;
+  $_aMonitor_play_item[15]['ball']['000_'.$sI]='500_'.$i;
+}
+//批次調整時,key的對照表
+/*
+  $_aMonitor_batch_key[遊戲編號][頁面][key]=[玩法,玩法,...]
+*/
+$_aMonitor_batch_key=array();
+//---KLC---
+$_aMonitor_batch_key[11]=array();
+$_aMonitor_batch_key[11]['sumDT']=array();
+$_aMonitor_batch_key[11]['sumDT']['29']=array(175);//正碼
+$_aMonitor_batch_key[11]['sumDT']['12|13|14']=array(140,141,142);//兩面
+$_aMonitor_batch_key[11]['sumDT']['all']=array_merge(//全部
+   $_aMonitor_batch_key[11]['sumDT']['29']
+  ,$_aMonitor_batch_key[11]['sumDT']['12|13|14']
+);
+//第1球~第8球
+for($i=1;$i<=8;$i++){
+    $sPage='ball'.$i;
+    $sn=($i-1);
+    $_aMonitor_batch_key[11][$sPage]=array();
+    $_aMonitor_batch_key[11][$sPage]['0'.$sn]=array((100+$sn));//第?球
+    $_aMonitor_batch_key[11][$sPage]['08|09|10|11']=array((108+$sn),(116+$sn),(124+$sn),(132+$sn));//兩面
+    $_aMonitor_batch_key[11][$sPage]['15']=array((143+$sn));//中發白
+    $_aMonitor_batch_key[11][$sPage]['16']=array((151+$sn));//東南西北
+    $_aMonitor_batch_key[11][$sPage]['all']=array_merge(
+       $_aMonitor_batch_key[11][$sPage]['0'.$sn]
+      ,$_aMonitor_batch_key[11][$sPage]['08|09|10|11']
+      ,$_aMonitor_batch_key[11][$sPage]['15']
+      ,$_aMonitor_batch_key[11][$sPage]['16']
+    );
+    if($i<5){
+      $_aMonitor_batch_key[11][$sPage]['17']=array((159+$sn));//龍虎
+      $_aMonitor_batch_key[11][$sPage]['all']=array_merge(
+        $_aMonitor_batch_key[11][$sPage]['all']
+        ,$_aMonitor_batch_key[11][$sPage]['17']
+      );
+    }    
+    
+}
+$_aMonitor_batch_key[11]['evenCode']=array();
+$_aMonitor_batch_key[11]['evenCode']['18']=array(167);
+$_aMonitor_batch_key[11]['evenCode']['20']=array(168);
+$_aMonitor_batch_key[11]['evenCode']['21']=array(170);
+$_aMonitor_batch_key[11]['evenCode']['23']=array(171);
+$_aMonitor_batch_key[11]['evenCode']['24']=array(173);
+$_aMonitor_batch_key[11]['evenCode']['25']=array(174);
+$_aMonitor_batch_key[11]['evenCode']['all']=array_merge(
+   $_aMonitor_batch_key[11]['evenCode']['18']
+  ,$_aMonitor_batch_key[11]['evenCode']['20']
+  ,$_aMonitor_batch_key[11]['evenCode']['21']
+  ,$_aMonitor_batch_key[11]['evenCode']['23']
+  ,$_aMonitor_batch_key[11]['evenCode']['24']
+  ,$_aMonitor_batch_key[11]['evenCode']['25']
+);
+//---SSC---
+$_aMonitor_batch_key[12]=array();
+$_aMonitor_batch_key[12]['']=array();
+for($i=0;$i<5;$i++){
+  $_aMonitor_batch_key[12]['']['00'.($i).'|00'.($i+5)]=array((200+$i),(225+$i),(230+$i));//第?球
+}
+$_aMonitor_batch_key[12]['']['010|011|012|013']=array(205,206,207,208,209);//總和-龍虎和
+$_aMonitor_batch_key[12]['']['014|017|020|023|026']=array(210,213,216,219,222);//前三
+$_aMonitor_batch_key[12]['']['015|018|021|024|027']=array(211,214,217,220,223);//中三
+$_aMonitor_batch_key[12]['']['016|019|022|025|028']=array(212,215,218,221,224);//後三
+$_aMonitor_batch_key[12]['']['all']=array_merge(
+   $_aMonitor_batch_key[12]['']['000|005']
+  ,$_aMonitor_batch_key[12]['']['001|006']
+  ,$_aMonitor_batch_key[12]['']['002|007']
+  ,$_aMonitor_batch_key[12]['']['003|008']
+  ,$_aMonitor_batch_key[12]['']['004|009']
+  ,$_aMonitor_batch_key[12]['']['010|011|012|013']
+  ,$_aMonitor_batch_key[12]['']['014|017|020|023|026']
+  ,$_aMonitor_batch_key[12]['']['015|018|021|024|027']
+  ,$_aMonitor_batch_key[12]['']['016|019|022|025|028']
+);
+//---PK---
+$_aMonitor_batch_key[13]=array();
+$_aMonitor_batch_key[13]['li1_pk10']=array();//冠亞軍組合
+$_aMonitor_batch_key[13]['li1_pk10']['037']=array(337);//冠亞和
+$_aMonitor_batch_key[13]['li1_pk10']['035|036']=array(335,336);//兩面
+$_aMonitor_batch_key[13]['li1_pk10']['all']=array_merge(
+   $_aMonitor_batch_key[13]['li1_pk10']['037']
+  ,$_aMonitor_batch_key[13]['li1_pk10']['035|036']
+);
+$_aMonitor_batch_key[13]['li2_pk10']=array();//1~5
+for($i=1;$i<=5;$i++){
+  //000|010|020|030
+  $sn=$i-1;
+  $sKey='00'.($sn).'|01'.($sn).'|02'.($sn).'|03'.($sn);
+  $_aMonitor_batch_key[13]['li2_pk10'][$sKey]=array((300+$sn),(310+$sn),(320+$sn),(330+$sn));
+}
+$_aMonitor_batch_key[13]['li2_pk10']['all']=array_merge(
+   $_aMonitor_batch_key[13]['li2_pk10']['000|010|020|030']
+  ,$_aMonitor_batch_key[13]['li2_pk10']['001|011|021|031']
+  ,$_aMonitor_batch_key[13]['li2_pk10']['002|012|022|032']
+  ,$_aMonitor_batch_key[13]['li2_pk10']['003|013|023|033']
+  ,$_aMonitor_batch_key[13]['li2_pk10']['004|014|024|034']
+);
+$_aMonitor_batch_key[13]['li3_pk10']=array();//6~10
+for($i=6;$i<=10;$i++){
+  //000|010|020|030
+  $sn=$i-1;
+  $sKey='00'.($sn).'|01'.($sn).'|02'.($sn);
+  $_aMonitor_batch_key[13]['li3_pk10'][$sKey]=array((300+$sn),(310+$sn),(320+$sn));
+}
+$_aMonitor_batch_key[13]['li3_pk10']['all']=array_merge(
+   $_aMonitor_batch_key[13]['li3_pk10']['005|015|025']
+  ,$_aMonitor_batch_key[13]['li3_pk10']['006|016|026']
+  ,$_aMonitor_batch_key[13]['li3_pk10']['007|017|027']
+  ,$_aMonitor_batch_key[13]['li3_pk10']['008|018|028']
+  ,$_aMonitor_batch_key[13]['li3_pk10']['009|019|029']
+);
+$_aMonitor_batch_key[14]=$_aMonitor_batch_key[11];
+$_aMonitor_batch_key[14]['evenCode']=array();
+$_aMonitor_batch_key[14]['evenCode']['20']=array(167);
+$_aMonitor_batch_key[14]['evenCode']['21']=array(168);
+$_aMonitor_batch_key[14]['evenCode']['22']=array(169);
+$_aMonitor_batch_key[14]['evenCode']['23']=array(170);
+$_aMonitor_batch_key[14]['evenCode']['30']=array(171);
+$_aMonitor_batch_key[14]['evenCode']['26']=array(173);
+$_aMonitor_batch_key[14]['evenCode']['27']=array(174);
+$_aMonitor_batch_key[14]['evenCode']['all']=array_merge(
+   $_aMonitor_batch_key[14]['evenCode']['20']
+  ,$_aMonitor_batch_key[14]['evenCode']['21']
+  ,$_aMonitor_batch_key[14]['evenCode']['22']
+  ,$_aMonitor_batch_key[14]['evenCode']['23']
+  ,$_aMonitor_batch_key[14]['evenCode']['30']
+  ,$_aMonitor_batch_key[14]['evenCode']['26']
+  ,$_aMonitor_batch_key[14]['evenCode']['27']
+);
+//---KB---
+$_aMonitor_batch_key[15]=array();
+$_aMonitor_batch_key[15]['sumDT']=array();
+$_aMonitor_batch_key[15]['sumDT']['01']=array(501,502,503);//總和
+$_aMonitor_batch_key[15]['sumDT']['04']=array(505,506);//總和過關
+$_aMonitor_batch_key[15]['sumDT']['05']=array(507);//前後和
+$_aMonitor_batch_key[15]['sumDT']['06']=array(508);//單雙和
+$_aMonitor_batch_key[15]['sumDT']['07']=array(509);//五行
+$_aMonitor_batch_key[15]['sumDT']['all']=array_merge(
+   $_aMonitor_batch_key[15]['sumDT']['01']
+  ,$_aMonitor_batch_key[15]['sumDT']['04']
+  ,$_aMonitor_batch_key[15]['sumDT']['05']
+  ,$_aMonitor_batch_key[15]['sumDT']['06']
+  ,$_aMonitor_batch_key[15]['sumDT']['07']
+);
+$_aMonitor_batch_key[15]['ball']['all']=array(500);
+//每個遊戲的兩盤需要轉成號碼
+$_aMonitor_Both_sides=array();
+$_aMonitor_Both_sides_num=array();
+	//單雙
+	for($i=108;$i<=115;$i++){
+		$_aMonitor_Both_sides_num[$i]=$i-8;
+		$_aMonitor_Both_sides['klc'][$i.'_O']=array(1,3,5,7,9,11,13,15,17,19);
+		$_aMonitor_Both_sides['klc'][$i.'_E']=array(2,4,6,8,10,12,14,16,18,20);
+	}
+	//大小
+	for($i=116;$i<=123;$i++){
+		$_aMonitor_Both_sides_num[$i]=$i-16;
+		$_aMonitor_Both_sides['klc'][$i.'_L']=array(11,12,13,14,15,16,17,18,19,20);
+		$_aMonitor_Both_sides['klc'][$i.'_S']=array(1,2,3,4,5,6,7,8,9,10);
+	}
+	//尾大小
+	for($i=124;$i<=131;$i++){
+		$_aMonitor_Both_sides_num[$i]=$i-24;
+		$_aMonitor_Both_sides['klc'][$i.'_L']=array(5,6,7,8,9,15,16,17,18,19);
+		$_aMonitor_Both_sides['klc'][$i.'_S']=array(1,2,3,4,10,11,12,13,14,20);
+	}
+	//和數單雙
+	for($i=132;$i<=139;$i++){
+		$_aMonitor_Both_sides_num[$i]=$i-32;
+		$_aMonitor_Both_sides['klc'][$i.'_O']=array(1,3,5,7,9,10,12,14,16,18);
+		$_aMonitor_Both_sides['klc'][$i.'_E']=array(2,4,6,8,11,13,15,17,19,20);
+	}
+	//單雙
+	for($i=225;$i<=229;$i++){
+		$_aMonitor_Both_sides_num[$i]=$i-25;
+		$_aMonitor_Both_sides['ssc'][$i.'_O']=array(1,3,5,7,9);
+		$_aMonitor_Both_sides['ssc'][$i.'_E']=array(0,2,4,6,8);
+	}
+	//大小
+	for($i=230;$i<=234;$i++){
+		$_aMonitor_Both_sides_num[$i]=$i-30;
+		$_aMonitor_Both_sides['ssc'][$i.'_L']=array(5,6,7,8,9);
+		$_aMonitor_Both_sides['ssc'][$i.'_S']=array(0,1,2,3,4);
+	}
+	//單雙
+	for($i=310;$i<=319;$i++){
+		$_aMonitor_Both_sides_num[$i]=$i-10;
+		$_aMonitor_Both_sides['pk'][$i.'_L']=array(6,7,8,9,10);
+		$_aMonitor_Both_sides['pk'][$i.'_S']=array(1,2,3,4,5);
+	}
+	//大小
+	for($i=320;$i<=329;$i++){
+		$_aMonitor_Both_sides_num[$i]=$i-20;
+		$_aMonitor_Both_sides['pk'][$i.'_O']=array(1,3,5,7,9);
+		$_aMonitor_Both_sides['pk'][$i.'_E']=array(2,4,6,8,10);
+	}
+	$_aMonitor_Both_sides['nc']=$_aMonitor_Both_sides['klc'];
+?>
