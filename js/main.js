@@ -182,6 +182,34 @@ function date_onSelect_chg_result(){
 *取得當日已結算的期數 
 *塞入 下拉選單
 */
+function date_onSelect_chg_send_date(){
+	var URLs="get_draws.php";
+	$.ajax({
+		url: URLs,
+		//*送出 遊戲跟日期 
+		data: {
+			'g':$('#send_game').val(),
+			'd':$("#send_date").val()
+		},
+		type:"POST",
+		dataType:"json",
+		//*取得當日已結算的期數 
+		success: function(draws){
+			//*初始化 下拉選單
+			$("#send_result_sn").empty();
+			//*塞入 下拉選單
+			for (var i = 0; i < draws.length; i++) {
+				$("#send_result_sn").append('<option value='+draws[i]+'>'+draws[i]+'</option>');
+			}
+		}
+	});
+}
+//日期被選擇時 所做的事情
+/*
+*送出 遊戲跟日期 
+*取得當日已結算的期數 
+*塞入 下拉選單
+*/
 function date_re_onSelect_result(){
 	var URLs="get_draws.php";
 	$.ajax({
@@ -241,6 +269,33 @@ function run_ins_result(){
 	});
 }
 //送出切換站台 修正結果
+function run_send_result(){
+	var URLs="../api/get_site_result.php";
+	$.ajax({
+		url: URLs,
+		data: {
+			'game':$('#send_game').val(),
+			'rpt_date':$("#send_date").val(),
+			'site':$("#send_site").val(),
+			'draws_num':$("#send_result_sn").val(),
+			'url':$("#receive_site").val(),
+		},
+		type:"POST",
+		dataType:"text",
+		beforeSend:function(){
+		},
+		complete:function(){
+		},
+		success: function(msg){
+		alert(msg);
+		},
+		error:function(xhr, ajaxOptions, thrownError){
+		alert(xhr.status); 
+		alert(thrownError);
+		}
+	});
+}
+//送出切換站台 修正結果
 function run_chg_result(){
 	var URLs="../server/service/ser_chg_result.php";
 	$.ajax({
@@ -258,7 +313,7 @@ function run_chg_result(){
 		complete:function(){
 		},
 		success: function(msg){
-		alert(msg);
+			alert(msg);
 		},
 		error:function(xhr, ajaxOptions, thrownError){
 		alert(xhr.status); 

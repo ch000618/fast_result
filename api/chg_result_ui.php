@@ -1,5 +1,7 @@
 <?php
+include_once('../config/sys_config.php');
 echo main();
+echo main_2();
 //手動開獎程式
 function main(){
 	$ver=strtotime(date('Y-m-d H:i:s'));
@@ -22,6 +24,17 @@ function main(){
 	$aHtml[]='	,changeMonth:true';
 	$aHtml[]='	,changeYear:true';
 	$aHtml[]='	,onSelect: function() {date_onSelect_chg_result();}';
+	$aHtml[]='});';
+	$aHtml[]='$("#send_game").change(function(){'; 
+	$aHtml[]='document.getElementById("send_date").value="";';
+	$aHtml[]='$("#result_sn").empty();';
+	$aHtml[]='});'; 
+	$aHtml[]='$( "#send_date" ).datepicker(';
+	$aHtml[]='{';
+	$aHtml[]='	dateFormat: "yy-mm-dd"';
+	$aHtml[]='	,changeMonth:true';
+	$aHtml[]='	,changeYear:true';
+	$aHtml[]='	,onSelect: function() {date_onSelect_chg_send_date();}';
 	$aHtml[]='});';
 	$aHtml[]='});';
 	$aHtml[]='</script>';
@@ -76,7 +89,6 @@ function main(){
 	$aHtml[]='<select id="site" name="site"></br></br>';
 	$aHtml[]='<option value="un">金博</option>';
 	$aHtml[]='<option value="1399p">皇家彩世界</option>';
-	//$aHtml[]='<option value="lianju">連鉅</option>';
 	$aHtml[]='<option value="168new">168</option>';
 	$aHtml[]='<option value="98007">98彩票網</option>';
 	$aHtml[]='<option value="91333">彩之家</option>';
@@ -95,6 +107,72 @@ function main(){
 	$aHtml[]='</div>';
 	$aHtml[]='</body>';
 	$aHtml[]='</html>';
+	$sHtml=implode(' ',$aHtml);
+	$sHtml=str_replace('[ver]',$ver,$sHtml);
+	return $sHtml;
+}
+/*
+echo '<pre>';
+print_r($aWebHost);
+echo '</pre>';
+*/
+function main_2(){
+	global $aWebHost;
+	$ver=strtotime(date('Y-m-d H:i:s'));
+	$aHtml[]='<div>';
+	$aHtml[]='<h1>開獎結果站台廣播器</h1>';
+	$aHtml[]='<div>';
+	$aHtml[]='使用方法:';
+	$aHtml[]='<ul>';
+	$aHtml[]='<li>';
+	$aHtml[]='選擇 彩票類型';
+	$aHtml[]='</li>';
+	$aHtml[]='<li>';
+	$aHtml[]='選擇 要廣播站台';
+	$aHtml[]='</li>';
+	$aHtml[]='<li>';
+	$aHtml[]='選擇 發生問題的日期';
+	$aHtml[]='</li>';
+	$aHtml[]='<li>';
+	$aHtml[]='選擇 要期數名稱';
+	$aHtml[]='</li>';
+	$aHtml[]='<li>';
+	$aHtml[]='選擇 要用哪個站台結果';
+	$aHtml[]='</li>';
+	$aHtml[]='</ul>';
+	$aHtml[]='<form id="send_result" method="post">';
+	$aHtml[]='彩票類型';
+	$aHtml[]='<select id="send_game" name="send_game"></br></br>';
+	$aHtml[]='<option value="klc">klc</option>';
+	$aHtml[]='<option value="ssc">ssc</option>';
+	$aHtml[]='<option value="pk">pk</option>';
+	$aHtml[]='<option value="nc">nc</option>';
+	$aHtml[]='<option value="kb">kb</option>';
+	$aHtml[]='</select>';
+	$aHtml[]='<select id="send_site" name="send_site"></br></br>';
+	$aHtml[]='<option value="un">金博</option>';
+	$aHtml[]='<option value="1399p">皇家彩世界</option>';
+	$aHtml[]='<option value="168new">168</option>';
+	$aHtml[]='<option value="98007">98彩票網</option>';
+	$aHtml[]='<option value="91333">彩之家</option>';
+	$aHtml[]='</select>';
+	$aHtml[]='<select id="receive_site" name="receive_site"></br></br>';
+	foreach($aWebHost as $k =>$v){
+		$aHtml[]='<option value="'.$v['hostName'].'">'.$v['ch_site'].'</option>';
+	}
+	$aHtml[]='</select>';
+	$aHtml[]='</br></br>';
+	$aHtml[]='日期';
+	$aHtml[]="<input id='send_date' type='text' name='send_date'></br></br>";
+	$aHtml[]='開獎期數';
+	$aHtml[]='<select id="send_result_sn" name="send_result_sn"></br></br>';
+	$aHtml[]='</select>';
+	$aHtml[]='<div id="result">';
+	$aHtml[]='</div>';
+	$aHtml[]='<input type="button" onclick="run_send_result();" value="執行">';
+	$aHtml[]='</form>';
+	$aHtml[]='</div>';
+	$aHtml[]='</div>';
 	$sHtml=implode(' ',$aHtml);
 	$sHtml=str_replace('[ver]',$ver,$sHtml);
 	return $sHtml;

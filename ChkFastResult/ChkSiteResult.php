@@ -24,11 +24,9 @@ function init(){
 	echo $sRET;
 }
 function chk_all_game_result_yesterday(){
+	$debug=false;
 	$aRet=array();
-	$date=date('Y-m-d');
 	$aRET=array();
-	$yesterdaytime=strtotime($date.' 00:00:00')-86400;
-	$sRpt_date=date('Y-m-d',$yesterdaytime);
 	//抓出所有遊戲
 	$aGame=api_get_all_game();
 	$aHis_site_list=array();
@@ -43,6 +41,11 @@ function chk_all_game_result_yesterday(){
 		,'91333'
 	);
 	foreach($aGame as $k => $sGame){
+		$aNow_draws=dws_get_now_draws_info($sGame);
+		if(count($aNow_draws)<1){continue;}
+		$Today=$aNow_draws['rpt_date'];
+		$yesterdaytime=strtotime($Today.' 00:00:00')-86400;
+		$sRpt_date=date('Y-m-d',$yesterdaytime);
 		//取得所有遊戲的 昨天的最後一期的 期數
 		$sDraws_sn=ser_get_last_result_seq($sGame,$sRpt_date);
 		//抓出最後一期 以前的所有期數
@@ -70,6 +73,7 @@ function chk_all_game_result_yesterday(){
 			$aHis_site_list=ser_get_hislist_list_site_table($sGame,$sSite,$aDraws);
 			if(count($aHis_site_list)<1){continue;}
 			foreach($aHis_site_list as $index =>$aSite_list){
+				if(count($aSite_list)<1){continue;}
 				//移除 不需要比對的欄位
 				unset($aSite_list['lottery_Time']);
 				unset($aSite_list['site']);
@@ -81,27 +85,41 @@ function chk_all_game_result_yesterday(){
 			}
 		}
 	}
+	if($debug){
+		echo '<pre>';
+		echo "[aHis_site_result]= \n";
+		print_r($aHis_site_result);
+		echo "[aHis_dws_result]= \n";
+		print_r($aHis_dws_result);
+		echo '</pre>';
+	}
 	if(count($aHis_site_result)<1){
-		$aRet[0]="目前沒有結果";
+		$aRet[0]="[昨日沒有結果 或 昨日休息]";
 		return $aRet;
 	}
 	//用主表 的結果跟站台結果表的 各個站台比對結果 有錯就回傳錯誤訊息
 	foreach($aHis_site_result as $sGame => $aSite_data){
 		foreach($aSite_data as $sSite =>$aData){
 			foreach($aData as $sNum => $aBall){
-				foreach($aBall as $sCol => $sBall){
-					if(isset($aHis_dws_result[$sGame][$sNum][$sCol])){
-						if($sBall!=$aHis_dws_result[$sGame][$sNum][$sCol]){
-							$aRet[]="昨日".$sGame."_".$sSite."_".$sNum." 期 結果不同 ";
-						}
+				if(isset($aHis_dws_result[$sGame][$sNum])){
+					$sBall=implode(',',$aBall);
+					$sHis_dws_result=implode(',',$aHis_dws_result[$sGame][$sNum]);
+					if($sBall!=$sHis_dws_result){
+						$aRet[]="[".$sGame."_".$sSite."_".$sNum." 期結果不同: (".$sBall.") 目前採用結果為: (".$sHis_dws_result.")";
 					}
 				}
 			}
 		}
 	}
 	if(count($aRet)<1){
-		$aRet[0]='昨日結果一致';
+		$aRet[0]="[昨日開獎結果皆一致]";
 		return $aRet;
+	}
+	if($debug){
+		echo '<pre>';
+		echo "[昨日站台結果檢查] : \n";
+		print_r($aRet);
+		echo '</pre>';
 	}
 	return $aRet;
 }

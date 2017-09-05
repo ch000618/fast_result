@@ -13,5 +13,17 @@ $web_cfg['path_lib']=$web_cfg['path'].'lib/';//函式
 include_once($web_cfg['path_lib'].'func.debug.php');
 //過濾SQL字串
 include_once($web_cfg['path_lib'].'func.filter.php');
+$aUse_site=array();
+$aUse_site[]='01';//潤達
+$aUse_site[]='00';//139369
+//-------- 載入設定檔
+$aWebHost=array();
+$i=0;
+foreach($aUse_site as $key =>$v){
+	include_once('site_config_'.$v.'.php');
+	$aWebHost[$i]=$aSiteHost;
+	$aWebHost[$i]['sn']=$v;
+	$i++;
+}
 proFilter();
 ?>
