@@ -1196,6 +1196,8 @@ function mke_lottery_num_list_168old($sGame){
 */
 function mke_lottery_num_list_1399p($sGame){
 	$aRet=array();
+	$aRet=mke_lottery_num_list_1399p_v2($sGame);
+	return $aRet;
 	$lt=ser_get_result_1399p($sGame);
 	//print_r($lt);
 	//檢查 獎號是否 有抓到
@@ -1223,6 +1225,7 @@ function mke_lottery_num_list_1399p($sGame){
 	if($periodDate=='0' || $periodDate==''){
 		return $aRet;
 	}
+	$sDraws_num=$periodDate;
 	if($sGame=='ssc'){
 		$isn=(int)substr($periodDate,8,10);
 		if($isn<100){
@@ -1234,7 +1237,7 @@ function mke_lottery_num_list_1399p($sGame){
 		}
 		$sDraws_num=substr($periodDate,0,8).$sn;
 	}
-	if($sGame=='nc'){
+	if($sGame=='nc' || $sGame=='klc'){
 		$isn=(int)substr($periodDate,8,10);
 		if($isn<10){
 			$sn="0".$isn;
@@ -1257,6 +1260,120 @@ function mke_lottery_num_list_1399p($sGame){
 			$aNum[18],$aNum[19]
 		);
 		$aNum[20]=$lt['current']['pan'];
+	}
+	$aRet=array_merge($aDraws_num,$aNum);
+	$aRet['lottery_Time']=$awardTime;
+	$aRet['total_sum']=array_sum($aNum);
+	if($sGame=='pk'){
+		$aRet['total_sum']=$aNum[0]+$aNum[1];
+	}
+	if($sGame=='kb'){
+		$aRet['total_sum']=array_sum($aNum_kb);
+	}
+	return $aRet;
+}
+//1399p網站 當期開獎號碼 資料庫新增格式
+/*
+	傳入:
+		遊戲編號
+	回傳:
+		資料庫需要格式 
+	*檢查 獎號是否 有抓到
+	*檢查 陣列格式
+	*檢查 是否開獎
+*/
+function mke_lottery_num_list_1399p_v2($sGame){
+	$debug=true;
+	if($debug){
+		echo "exec : mke_lottery_num_list_1399p_v2 \n";
+	}
+	$aRet=array();
+	$lt=ser_get_result_1399p_v2($sGame);
+	$dws=dws_get_now_lottery_info($sGame);
+	$sDraws=$dws['draws_num'];
+	//print_r($lt);
+	//檢查 獎號是否 有抓到
+	if(count($lt)<1){
+		return $aRet;
+	}
+	//檢查 陣列格式
+	switch($sGame){
+		case 'klc':
+			$sDraws_sn=(int)substr($sDraws,8,10);
+			$sDraws_date=substr($sDraws,0,8);
+			$periodDate=$lt['current']['period'];
+			if($sDraws_sn==$lt['current']['period']){
+				$periodDate=$sDraws;
+			}else{
+				return $aRet;
+			}
+			break;
+		case 'nc':
+			$sDraws_sn=(int)substr($sDraws,8,10);
+			$sDraws_date=substr($sDraws,0,8);
+			if($sDraws_sn==$lt['current']['period']){
+				$periodDate=$sDraws;
+			}else{
+				return $aRet;
+			}
+			break;
+		case 'ssc':
+			$sDraws_sn=(int)substr($sDraws,8,10);
+			$sDraws_date=substr($sDraws,0,8);
+			if($sDraws_sn==$lt['current']['period']){
+				$periodDate=$sDraws;
+			}else{
+				return $aRet;
+			}
+			break;
+		default:
+			$periodDate=$lt['current']['period'];
+			break;
+	}
+	$awardNumbers=$lt['current']['result'];
+	$awardNumbers=str_replace('#',',',$awardNumbers);
+	$awardTime=$lt['current']['awardTime'];
+	//檢查 抓回的獎號 是否為空結果
+	if($periodDate=='0' || $periodDate==''){
+		return $aRet;
+	}
+	$sDraws_num=$periodDate;
+	/*
+	if($sGame=='ssc'){
+		$isn=(int)substr($periodDate,8,10);
+		if($isn<100){
+			$sn="0".$isn;
+		}else if($isn<10){
+			$sn="00".$isn;
+		}else{
+			$sn=$isn;
+		}
+		$sDraws_num=substr($periodDate,0,8).$sn;
+	}
+	if($sGame=='nc' || $sGame=='klc'){
+		$isn=(int)substr($periodDate,8,10);
+		if($isn<10){
+			$sn="0".$isn;
+		}else{
+			$sn=$isn;
+		}
+		$sDraws_num=substr($periodDate,0,8).$sn;
+		//echo $sDraws_num;
+	}
+	*/
+	$aDraws_num=array('draws_num'=>$sDraws_num);
+	$aNums=explode(',',$awardNumbers);
+	foreach($aNums as $k => $v){
+		$aNum[]=(int)$v;
+	}
+	if($sGame=='kb'){
+		$aNum_kb=array(
+			$aNum[0],$aNum[1],$aNum[2],$aNum[3],$aNum[4],$aNum[5],
+			$aNum[6],$aNum[7],$aNum[8],$aNum[9],$aNum[10],$aNum[11],
+			$aNum[12],$aNum[13],$aNum[14],$aNum[15],$aNum[16],$aNum[17],
+			$aNum[18],$aNum[19]
+		);
+		//$aNum[20]=$lt['current']['pan'];
 	}
 	$aRet=array_merge($aDraws_num,$aNum);
 	$aRet['lottery_Time']=$awardTime;
@@ -1569,6 +1686,81 @@ function ser_get_result_1399p($sGame){
 	$ch = curl_init();
 	$http = "http://www.1395p.com/$game_root/ajax?ajaxhandler=$game_do&t=$t";
 	$aReferer[]="http://www.1395p.com/api";
+	$aReferer[]="/kaijiang.html?lottery=pk10,cqssc,gdkl10,kl8,xync";
+	$aReferer[]="&set=$game_root&bgcolor=e0e0e0&size=980&hgt=35";
+	$sReferer=implode('',$aReferer);
+	$cookie_txt=dirname(dirname(__FILE__))."/text/1395p.txt";
+	$aUser_agent[]="Mozilla/5.0";
+	$aUser_agent[]="(Windows NT 10.0; WOW64)"; 
+	$aUser_agent[]="AppleWebKit/537.36"; 
+	$aUser_agent[]="(KHTML, like Gecko)"; 
+	$aUser_agent[]="Chrome/53.0.2785.143 Safari/537.36";
+	$sUser_agent=implode('',$aUser_agent);
+	curl_setopt($ch,CURLOPT_URL,$http);
+	//是否回傳檔頭
+	curl_setopt($ch,CURLOPT_HEADER,0);
+	//是否跟隨 重新導向
+	curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);
+	//是否將結果 以字串回傳
+	curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+	//是否啟用 毫秒級等待
+	curl_setopt($ch,CURLOPT_NOSIGNAL,1);
+	//模擬 網頁調用 結果 給他 referer
+	curl_setopt($ch,CURLOPT_REFERER,$sReferer);
+	//模擬 網頁調用 結果 存$cookie
+	curl_setopt($ch,CURLOPT_COOKIEJAR,$cookie_txt);
+	//模擬 網頁調用 結果 送$cookie
+	curl_setopt($ch,CURLOPT_COOKIEFILE,$cookie_txt);
+	//最長等待時間 
+	curl_setopt($ch,CURLOPT_TIMEOUT_MS,2000);
+	//curl_setopt($ch,CURLOPT_CONNECTTIMEOUT_MS,1000);
+	//模擬 瀏覽器的User_agent
+	curl_setopt($ch,CURLOPT_USERAGENT,$sUser_agent);
+	// 執行
+	$str=curl_exec($ch);
+	// 關閉CURL連線
+	curl_close($ch);
+	$obj=json_decode($str,true);
+	return $obj;
+}
+//抓開獎結果 1399p_v2
+/*
+	*目錄 判斷
+	*get值 判斷
+	*各種偽裝瀏覽器
+	*寫cookie
+	*讀cookie
+	*允許重新導向
+	傳入:
+		遊戲代碼
+		要開獎的期數名稱
+	回傳:
+		當期結果陣列
+*/
+function ser_get_result_1399p_v2($sGame){
+	$root_name=array();
+	//新版網站 都放在不同的目錄
+	$root_name['klc']='gdkl10';
+	$root_name['ssc']='shishicai';
+	$root_name['pk']='pk10';
+	$root_name['nc']='xync';
+	$root_name['kb']='kl8';
+	$do_name=array();
+	//1399p網站 每個遊戲有自己的get值
+	$do_name['klc']='GetGdkl10AwardData';
+	$do_name['ssc']='GetCqsscAwardData';
+	$do_name['nc']='GetXyncAwardData';
+	$do_name['pk']='GetPk10AwardData';
+	$do_name['kb']='Getkl8AwardData';
+	$game_root=$root_name[$sGame];
+	$game_do=$do_name[$sGame];
+	//產生0-1 之間的亂數
+	$t = mt_rand() / mt_getrandmax();
+	// 建立CURL連線
+	$ch = curl_init();
+	$http = "http://www.1399p.com/$game_root/getawarddata/?t=$t";
+	//echo $http;
+	$aReferer[]="http://www.1399p.com/api";
 	$aReferer[]="/kaijiang.html?lottery=pk10,cqssc,gdkl10,kl8,xync";
 	$aReferer[]="&set=$game_root&bgcolor=e0e0e0&size=980&hgt=35";
 	$sReferer=implode('',$aReferer);

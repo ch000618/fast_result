@@ -47,7 +47,7 @@ $aSiteHost['site_name']='rdfast.net';
 //站台類型
 $aSiteHost['draws']='純快';
 //站台名稱
-$aSiteHost['hostName']='rdfast.net';
+$aSiteHost['hostName']='fast.service';
 //工程用站台名稱
 $aSiteHost['RD_hostName']='rdfast.net';
 //站台資料庫名稱

@@ -1,7 +1,6 @@
 <?php
 include_once('../config/sys_config.php');
 echo main();
-echo main_2();
 //手動開獎程式
 function main(){
 	$ver=strtotime(date('Y-m-d H:i:s'));
@@ -105,18 +104,14 @@ function main(){
 	$aHtml[]='</form>';
 	$aHtml[]='</div>';
 	$aHtml[]='</div>';
+	$aHtml[]=send_result_ui();
 	$aHtml[]='</body>';
 	$aHtml[]='</html>';
 	$sHtml=implode(' ',$aHtml);
 	$sHtml=str_replace('[ver]',$ver,$sHtml);
 	return $sHtml;
 }
-/*
-echo '<pre>';
-print_r($aWebHost);
-echo '</pre>';
-*/
-function main_2(){
+function send_result_ui(){
 	global $aWebHost;
 	$ver=strtotime(date('Y-m-d H:i:s'));
 	$aHtml[]='<div>';
@@ -128,7 +123,7 @@ function main_2(){
 	$aHtml[]='選擇 彩票類型';
 	$aHtml[]='</li>';
 	$aHtml[]='<li>';
-	$aHtml[]='選擇 要廣播站台';
+	$aHtml[]='選擇 要廣播給 哪個快車站台';
 	$aHtml[]='</li>';
 	$aHtml[]='<li>';
 	$aHtml[]='選擇 發生問題的日期';
@@ -137,7 +132,7 @@ function main_2(){
 	$aHtml[]='選擇 要期數名稱';
 	$aHtml[]='</li>';
 	$aHtml[]='<li>';
-	$aHtml[]='選擇 要用哪個站台結果';
+	$aHtml[]='選擇 要用 哪個開獎站台結果 來廣播';
 	$aHtml[]='</li>';
 	$aHtml[]='</ul>';
 	$aHtml[]='<form id="send_result" method="post">';
@@ -174,7 +169,6 @@ function main_2(){
 	$aHtml[]='</div>';
 	$aHtml[]='</div>';
 	$sHtml=implode(' ',$aHtml);
-	$sHtml=str_replace('[ver]',$ver,$sHtml);
 	return $sHtml;
 }
 ?>

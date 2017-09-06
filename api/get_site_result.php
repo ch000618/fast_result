@@ -111,8 +111,11 @@ function init(){
 	$form_data['rpt_date']=$today;
 	$form_data['draws_num']=$draws_num;
 	$form_data['result']=json_encode($aResult);
+	echo "送出 第 $draws_num 期 \n";
+	echo "$site 開獎結果 \n";
+	print_r($aResult);
 	$ret=curl_sand_seq_award($url,$form_data);
-	echo $ret;
+	echo "目標狀態: $ret \n";
 	//exit;
 	
 }
@@ -124,11 +127,9 @@ function init(){
 function curl_sand_seq_award($url,$form_data){
 	// 建立CURL連線
 	$ch = curl_init();
-	//$draws_num="2016081725";
 	$http = "$url/server/service/mo.ins_award.php";
-	//echo $http;
 	curl_setopt($ch, CURLOPT_URL ,$http);
-	curl_setopt($ch, CURLOPT_HEADER ,false);
+	curl_setopt($ch, CURLOPT_HEADER ,0);
 	curl_setopt($ch, CURLOPT_POST, true); // 啟用POST
 	curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($form_data)); 
 	curl_setopt($ch, CURLOPT_USERAGENT ,$user_agent);
