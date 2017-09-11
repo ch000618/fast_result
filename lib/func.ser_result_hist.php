@@ -1046,17 +1046,14 @@ function ser_lottery_hislist_list_switch($sGame,$sRpt_date){
 	*符合條件 且優先度最高的(開出最多獎號的) 當成補開結果的依據
 */
 function ser_hislist_list_site_table($sGame,$aDraws){
-	//$debug=true;
+	$debug=false;
 	$aRet=array();
 	$aHis_list=array();
 	$aHis_tmp=array();
-	$aSite=array(
-		'un'
-		,'168new'
-		,'1399p'
-		,'lianju'
-		,'98007'
-	);
+	$aSite=array();
+	$close_site=ser_get_close_site($sGame);
+	//print_r($close_site);
+	$aSite=ser_get_error_cnt_rank($sGame);
 	//* 已開獎 幾期
 	$iDraws_cnt=count($aDraws);
 	//* 允許漏一期
@@ -1064,18 +1061,12 @@ function ser_hislist_list_site_table($sGame,$aDraws){
 	//* 參考站台準則 已開獎 幾期-允許漏幾期
 	$iRefer_norm=($iDraws_cnt-$iDrop_cnt);
 	foreach($aSite as $key =>$sSite){
+		if(in_array($name,$close_site)){
+			continue;
+		}
 		$his_list=ser_get_hislist_list_site_table($sGame,$sSite,$aDraws);
 		//*站台開獎列表 總次數
 		$his_list_cnt=count($his_list);
-		/*
-		//* 要補開站台 所開的期數 如果大於或等於準則 就補開納入參考
-		if( $his_list_cnt >= $iRefer_norm){
-			$aHis_list[$key]['cnt']=$his_list_cnt;
-			$aHis_list[$key]['list']=$his_list;
-		}else{
-			continue;
-		}
-		*/
 		$aHis_site_cnt[$sSite]=$his_list_cnt;
 		$aHis_tmp[$sSite]=$his_list;
 	}
@@ -1087,15 +1078,14 @@ function ser_hislist_list_site_table($sGame,$aDraws){
 	}
 	//*取陣列的第0個 結果列表 
 	$aRet=$aHis_list[0];
-	
-	echo '<xmp>';
-	print_r($aHis_site_cnt);
-	echo '</xmp>';
-	/*
-	echo '<xmp>';
-	print_r($aRet);
-	echo '</xmp>';
-	*/
+	if($debug){
+		echo '<xmp>';
+		print_r($aHis_site_cnt);
+		echo '</xmp>';
+		echo '<xmp>';
+		print_r($aRet);
+		echo '</xmp>';
+	}
 	return $aRet;
 }
 //撈出區間內 該站台所有開獎結果

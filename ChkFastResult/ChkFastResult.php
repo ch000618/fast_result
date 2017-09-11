@@ -203,57 +203,47 @@ function ChkResult(){
 		
 		/**
 		 * 下面開始比對別家的開獎結果
-		 */
-		$aTable = array("all_result_1680210"
-						//,"all_result_ju888",
-						//,"all_result_lianju"
-						,"all_result_un");
-		$aResult = array();	//$sTable結果
-		$sWhere = "";
-		//20170620 因為168210 期號改格式 為了可以每張表都能調整格式 改成再迴圈內 判斷where條件 
-		/*
-		$i=0
-		foreach ($aWhereGID AS $iGtype => $sNum){
-			if(count($sNum) > 0){
-				if($i > 0){
-					$sWhere.= " OR";
-				}
-				$sWhere.= " ( gtype = '".$iGtype."' AND gid IN ('".join("','",$sNum)."') )";
-				$i ++;
-			}
-		}
 		*/
-
-		if($sWhere != ""){
-			foreach ($aTable AS $sTable){
-				$i = 0;
-				foreach ($aWhereGID AS $iGtype => $sNum){
-					if(count($sNum) > 0){
-						if($i > 0){
-							$sWhere.= " OR";
-						}
-						$sWhere.= " ( gtype = '".$iGtype."' AND gid IN ('".join("','",$sNum)."') )";
-						if($sTable=='all_result_1680210' && $iGtype==4){
-							$sNum=$sDraws=substr($sNum,0,8).'0'.substr($sNum,8,10);
-							$sWhere.= " ( gtype = '".$iGtype."' AND gid IN ('".join("','",$sNum)."') )";
-						}
-						$i ++;
+		$aTable = array(
+			"all_result_1680210"
+			,"all_result_un"
+		);
+		$aResult = array();	//$sTable結果
+		foreach ($aTable AS $sTable){
+			$sWhere = "";
+			$i = 0;
+			foreach ($aWhereGID AS $iGtype => $sNum){
+				if(count($sNum) > 0){
+					if($i > 0){
+						$sWhere.= " OR";
 					}
+					//目前168的 格式改回來 所以註解調
+					/*
+					if($sTable=='all_result_1680210' && $iGtype==4){
+						$isn=(int)substr($sNum,8,10);
+						$sn=($isn<10)?"0".$isn:$isn;
+						$sNum=substr($sNum,0,8).$sn;
+						$sWhere.= " ( gtype = '".$iGtype."' AND gid IN ('".join("','",$sNum)."') )";
+					}else{
+						$sWhere.= " ( gtype = '".$iGtype."' AND gid IN ('".join("','",$sNum)."') )";
+					}
+					*/
+					$sWhere.= " ( gtype = '".$iGtype."' AND gid IN ('".join("','",$sNum)."') )";
+					$i++;
 				}
-				$qstr = "SELECT 
-								`reult_time`,`gid`, `gtype`, 
-								`num1`, `num2`, `num3`, `num4`, `num5`, `num6`, `num7`, `num8` ,`num9`, `num10`, 
-								`num11`, `num12`, `num13`, `num14`, `num15`, `num16`, `num17`, `num18` ,`num19`, `num20`, `num20` 
-							FROM 
-								`".$sTable."` 
-							WHERE 
-								".$sWhere."
-								GROUP BY gtype, gid
-								LIMIT 0, 1000";
-				if($sWhere != ""){
-					
-				}
-				//echo 	$qstr;
+			}
+			$qstr ="SELECT"; 
+			$qstr.="`reult_time`,`gid`, `gtype`,"; 
+			$qstr.="`num1`, `num2`, `num3`, `num4`, `num5`, `num6`, `num7`, `num8` ,`num9`, `num10`,"; 
+			$qstr.="`num11`, `num12`, `num13`, `num14`, `num15`, `num16`, `num17`, `num18` ,`num19`, `num20`, `num20`"; 
+			$qstr.=" FROM"; 
+			$qstr.="`".$sTable."`"; 
+			$qstr.="WHERE"; 
+			$qstr.=$sWhere;
+			$qstr.="GROUP BY gtype, gid ";
+			$qstr.="LIMIT 0, 1000 ";
+			if($sWhere != ""){
+				//echo 	$qstr."<br>";
 				$result = mysql_query($qstr, $conn);
 				if (!$result) die ("執行 ".$qstr." SQL命令失敗");
 				while($row = mysql_fetch_array($result)) {
@@ -327,46 +317,6 @@ function ChkResult(){
 			echo "<BR>";
 			echo "(".date("Y-m-d H:i:s").")";
 		}else{
-			/*
-			$tmp=array(
-				 'draws_klc_result'=>array(
-						'2017041335'=>array(
-							 'all_result_1680210'=>'1,2,3,4'
-							,'all_result_ju888'=>'1,2,3,4'
-							,'all_result_lianju'=>'1,2,3,5'
-						)
-				 )
-				,'draws_ssc_result'=>array(
-						'2017041335'=>array(
-							 'all_result_1680210'=>'1,2,3,4'
-							,'all_result_ju888'=>'1,2,3,4'
-							,'all_result_lianju'=>'1,2,3,5'
-						)
-				)
-				,'draws_pk_result'=>array(
-						'2017041335'=>array(
-							 'all_result_1680210'=>'1,2,3,4'
-							,'all_result_ju888'=>'1,2,3,4'
-							,'all_result_lianju'=>'1,2,3,5'
-						)
-				)
-				,'draws_nc_result'=>array(
-						'2017041335'=>array(
-							 'all_result_1680210'=>'1,2,3,4'
-							,'all_result_ju888'=>'1,2,3,4'
-							,'all_result_lianju'=>'1,2,3,5'
-						)
-				)
-				,'draws_kb_result'=>array(
-						'2017041335'=>array(
-							 'all_result_1680210'=>'1,2,3,4'
-							,'all_result_ju888'=>'1,2,3,4'
-							,'all_result_lianju'=>'1,2,3,5'
-						)
-				)
-			);
-			*/
-			//echo json_encode($tmp);
 			echo json_encode($aErr);
 		}		
 	}

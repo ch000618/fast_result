@@ -428,6 +428,35 @@ function api_get_error_cnt_rank($sGame){
   }
   return $aRet;  
 }
+//取得某遊戲 所有結果站台
+/*
+	傳入:
+		$sGame=遊戲
+	回傳:
+		回傳:
+		[
+			結果站台1
+			,結果站台2
+			,.....
+		]
+*/
+function api_get_all_site($sGame){
+  global $db_s;
+  $aSQL=array();
+  $aSQL[]='SELECT';
+  $aSQL[]='Site';
+  $aSQL[]='FROM site_result_enable';
+  $aSQL[]='WHERE 1';
+	$aSQL[]='AND Game="[game]"';
+  $sSQL=implode(' ',$aSQL);
+  $sSQL=str_replace('[game]',$sGame,$sSQL);
+  $db_s->sql_query($sSQL);
+	//echo $sSQL;
+  while($r=$db_s->nxt_row('ASSOC')){
+    $aRet[]=$r['Site'];
+  }
+  return $aRet;  
+}
 //新增一筆 採用站台紀錄
 /*
 	傳入
@@ -1014,52 +1043,6 @@ function api_remedy_drop_result(){
 	}
 	return $aRet;
 }
-//檢查抓開獎結果的來源 是否正常
-/*
-	傳入
-		$sGame=遊戲
-*/
-function api_chk_curl_status($sGame){
-	$game_id=array();
-	$game_id['klc']="1008";
-	$game_id['ssc']="10011";
-	$game_id['nc']="10010";
-	$game_id['pk']="10016";
-	$game_id['kb']="10014";
-	$id=$game_id[$sGame];
-	$user_agent="Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36"; //模擬成瀏覽器
-	$aRet=array();
-	$aRet['status']='OK';
-	// 建立CURL連線
-	$ch = curl_init();
-	$http = "http://kj.1680api.com/Open/CurrentOpenOne?code=$id";
-	curl_setopt($ch, CURLOPT_URL ,$http);
-	curl_setopt($ch, CURLOPT_HEADER ,false);
-	curl_setopt($ch, CURLOPT_USERAGENT ,$user_agent);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER ,1);
-	curl_setopt($ch,CURLOPT_NOSIGNAL,true);
-	curl_setopt($ch,CURLOPT_TIMEOUT_MS,3000);
-	// 執行
-	$str=curl_exec($ch);
-	// 關閉CURL連線
-	curl_close($ch);
-	$obj=json_decode($str,true);	
-	if(count($obj)<1){
-		$aRet['URL']=$http;
-		$aRet['game']=$sGame;
-		$aRet['status']='NG';
-		$aRet['draws']='';
-		$aRet['code']='';
-		$aRet['time']='';
-		return $aRet;
-	}
-	$aRet['URL']=$http;
-	$aRet['game']=$sGame;
-	$aRet['draws']=$obj['c_t'];
-	$aRet['code']=$obj['c_r'];
-	$aRet['time']=$obj['c_d'];
-	return $aRet;
-}
 
 //取得DB狀態
 function api_get_db_status(){
@@ -1114,7 +1097,7 @@ function api_chk_result_source(){
 	$aRet=array();
 	$aGame=api_get_all_game();
 	foreach($aGame as $k2 => $sGame){
-		$aSite=api_get_error_cnt_rank($sGame);
+		$aSite=api_get_all_site($sGame);
 		//print_r($aSite);
 		foreach($aSite as $k1 => $sSite){
 			$lottery_site_list=api_get_lottery_site_list($sGame,$sSite);

@@ -22,7 +22,7 @@ function ser_ins_lottery_num_list_v2($sGame){
 	global $db;
 	$lottery_num_list168new['168new']=mke_lottery_num_list_168new($sGame);
 	
-	$lottery_num_list1399p['1399p']=mke_lottery_num_list_1399p($sGame);
+	$lottery_num_list1399p['1399p']=mke_lottery_num_list_1399p_v2($sGame);
 	
 	$lottery_num_listlianju['lianju']=mke_lottery_num_list_lianju($sGame);
 	
@@ -132,6 +132,31 @@ function ser_get_error_cnt_rank($sGame){
   }
   return $aRet;  
 }
+//檢查停用站台
+/*
+	傳入:
+		$sGame=遊戲
+	回傳:
+		回傳:這個遊戲停用站台
+*/
+function ser_get_close_site($sGame){
+  global $db_s;
+  $aSQL=array();
+  $aSQL[]='SELECT';
+  $aSQL[]='Site';
+  $aSQL[]='FROM site_result_enable';
+  $aSQL[]='WHERE 1';
+	$aSQL[]='AND Game="[game]"';
+  $aSQL[]='AND Enable="0"';
+  $sSQL=implode(' ',$aSQL);
+  $sSQL=str_replace('[game]',$sGame,$sSQL);
+  $db_s->sql_query($sSQL);
+	//echo $sSQL;
+  while($r=$db_s->nxt_row('ASSOC')){
+    $aRet[]=$r['Site'];
+  }
+  return $aRet;  
+}
 //選擇開獎結果
 /*	
 *取得當前 開獎時間的期數
@@ -142,17 +167,28 @@ function ser_get_error_cnt_rank($sGame){
 *取出陣列第一個 因為已經是最優先的才會在第一個位置	
 */
 function ser_lottery_num_list_switch_v3($sGame){
+	$debug=false;
 	$aRet=array();
 	//*取得當前 開獎時間的期數
 	$dws=dws_get_now_lottery_info($sGame);
 	$sDraws=$dws['draws_num'];
-	//echo $draws;
+	if($debug){
+		echo $draws;
+	}
 	//*取出這期 所有站台的 做開獎號碼 比較
+	//被強制關閉的站台 
+	$close_site=ser_get_close_site($sGame);
+	if($debug){
+		print_r($close_site);
+	}
 	$aSite=ser_get_error_cnt_rank($sGame);
 	$ary_new=array();
 	$ary_new2=array();
 	//*依照站台的優先權 去跑迴圈 一個一個撈 有結果的塞進陣列
 	foreach($aSite as $key =>$name){
+		if(in_array($name,$close_site)){
+			continue;
+		}
 		$ary_new=ser_get_lottery_site_list_exist($sGame,$name,$sDraws);
 		if(count($ary_new)>1){
 			$ary_new2[]=$ary_new;
@@ -163,6 +199,9 @@ function ser_lottery_num_list_switch_v3($sGame){
 	}
 	//*取出陣列第一個 因為已經是最優先的才會
 	$aRet=$ary_new2[0];
+	if($debug){
+		print_r($aRet);
+	}
 	return $aRet;
 }
 //新增一筆 採用站台紀錄

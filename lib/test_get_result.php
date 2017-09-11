@@ -32,11 +32,13 @@ function init(){
 		break;
 		case 3:
 			$sGame=$_GET['g'];
-			$ary=mke_lottery_num_list_1399p($sGame);
+			$ary=ser_get_result_1399p_v2($sGame);
 			//$ary2=mke_lottery_num_list_168new($sGame);
+			
 			echo '<xmp>';
 			print_r($ary);
 			echo '</xmp>';
+		
 			/*
 			echo '<xmp>';
 			print_r($ary2);

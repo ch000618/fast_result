@@ -1758,9 +1758,9 @@ function ser_get_result_1399p_v2($sGame){
 	$t = mt_rand() / mt_getrandmax();
 	// 建立CURL連線
 	$ch = curl_init();
-	$http = "http://www.1399p.com/$game_root/getawarddata/?t=$t";
-	//echo $http;
-	$aReferer[]="http://www.1399p.com/api";
+	$http = "https://www.1399p.com/$game_root/getawarddata/?t=$t";
+	$Host=array('Host:www.1399p.com');
+	$aReferer[]="https://www.1399p.com/api";
 	$aReferer[]="/kaijiang.html?lottery=pk10,cqssc,gdkl10,kl8,xync";
 	$aReferer[]="&set=$game_root&bgcolor=e0e0e0&size=980&hgt=35";
 	$sReferer=implode('',$aReferer);
@@ -1771,28 +1771,42 @@ function ser_get_result_1399p_v2($sGame){
 	$aUser_agent[]="(KHTML, like Gecko)"; 
 	$aUser_agent[]="Chrome/53.0.2785.143 Safari/537.36";
 	$sUser_agent=implode('',$aUser_agent);
-	curl_setopt($ch,CURLOPT_URL,$http);
+	curl_setopt($ch, CURLOPT_URL,$http);
+	// 跳过证书检查
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); 
+	// 从证书中检查SSL加密算法是否存在
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1); 
 	//是否回傳檔頭
-	curl_setopt($ch,CURLOPT_HEADER,0);
+	curl_setopt($ch, CURLOPT_HEADER,0);
 	//是否跟隨 重新導向
-	curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
 	//是否將結果 以字串回傳
-	curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
 	//是否啟用 毫秒級等待
-	curl_setopt($ch,CURLOPT_NOSIGNAL,1);
+	curl_setopt($ch, CURLOPT_NOSIGNAL,1);
 	//模擬 網頁調用 結果 給他 referer
-	curl_setopt($ch,CURLOPT_REFERER,$sReferer);
+	curl_setopt($ch, CURLOPT_REFERER,$sReferer);
 	//模擬 網頁調用 結果 存$cookie
-	curl_setopt($ch,CURLOPT_COOKIEJAR,$cookie_txt);
+	curl_setopt($ch, CURLOPT_COOKIEJAR,$cookie_txt);
 	//模擬 網頁調用 結果 送$cookie
 	curl_setopt($ch,CURLOPT_COOKIEFILE,$cookie_txt);
 	//最長等待時間 
-	curl_setopt($ch,CURLOPT_TIMEOUT_MS,2000);
-	//curl_setopt($ch,CURLOPT_CONNECTTIMEOUT_MS,1000);
+	curl_setopt($ch, CURLOPT_TIMEOUT_MS,2000);
+	curl_setopt($ch, CURLOPT_HTTPHEADER,$Host);
 	//模擬 瀏覽器的User_agent
-	curl_setopt($ch,CURLOPT_USERAGENT,$sUser_agent);
+	curl_setopt($ch, CURLOPT_USERAGENT,$sUser_agent);
 	// 執行
 	$str=curl_exec($ch);
+	$info = curl_getinfo($ch);
+	//echo $info." \n ";
+	if($info['http_code']!=200){
+		/*
+		echo '<pre>';
+		print_r($info);
+		echo '</pre>';
+		*/
+		echo curl_error($ch);
+	}
 	// 關閉CURL連線
 	curl_close($ch);
 	$obj=json_decode($str,true);
