@@ -1,5 +1,5 @@
 <?php
-include_once($web_cfg['path_lib'].'func.draws_result.php');
+
 include_once($web_cfg['path_lib'].'func.draws.php');
 //開獎服務相關函釋
 /*整理出各玩法 所需資料
@@ -1738,6 +1738,7 @@ function ser_get_result_1399p($sGame){
 		當期結果陣列
 */
 function ser_get_result_1399p_v2($sGame){
+	$debug=false;
 	$root_name=array();
 	//新版網站 都放在不同的目錄
 	$root_name['klc']='gdkl10';
@@ -1745,66 +1746,79 @@ function ser_get_result_1399p_v2($sGame){
 	$root_name['pk']='pk10';
 	$root_name['nc']='xync';
 	$root_name['kb']='kl8';
-	$do_name=array();
-	//1399p網站 每個遊戲有自己的get值
-	$do_name['klc']='GetGdkl10AwardData';
-	$do_name['ssc']='GetCqsscAwardData';
-	$do_name['nc']='GetXyncAwardData';
-	$do_name['pk']='GetPk10AwardData';
-	$do_name['kb']='Getkl8AwardData';
 	$game_root=$root_name[$sGame];
-	$game_do=$do_name[$sGame];
+	$min=0;
+	$max=1;
 	//產生0-1 之間的亂數
-	$t = mt_rand() / mt_getrandmax();
+	$t = mt_rand()/mt_getrandmax();
+	$t.= mt_rand(0,999);
 	// 建立CURL連線
 	$ch = curl_init();
-	$http = "https://www.1399p.com/$game_root/getawarddata/?t=$t";
-	$Host=array('Host:www.1399p.com');
+	$http = "https://www.1399p.com/$game_root/getawarddata?t=$t";
+	$header[]="Host: www.1399p.com";
+	$header[]="Accept: application/json, text/javascript, */*; q=0.01";
+	$header[]="Accept-Encoding: gzip, deflate, br";
+	$header[]="Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4";
+	$header[]="Connection: keep-alive";
+	$header[]="X-Requested-With: XMLHttpRequest";
 	$aReferer[]="https://www.1399p.com/api";
 	$aReferer[]="/kaijiang.html?lottery=pk10,cqssc,gdkl10,kl8,xync";
-	$aReferer[]="&set=$game_root&bgcolor=e0e0e0&size=980&hgt=35";
+	$aReferer[]="&set=$game_root&bgcolor=ffffff&size=980&hgt=35";
 	$sReferer=implode('',$aReferer);
-	$cookie_txt=dirname(dirname(__FILE__))."/text/1395p.txt";
+	$cookie_txt=dirname(dirname(__FILE__))."/text/1399p.txt";
 	$aUser_agent[]="Mozilla/5.0";
 	$aUser_agent[]="(Windows NT 10.0; WOW64)"; 
 	$aUser_agent[]="AppleWebKit/537.36"; 
 	$aUser_agent[]="(KHTML, like Gecko)"; 
 	$aUser_agent[]="Chrome/53.0.2785.143 Safari/537.36";
 	$sUser_agent=implode('',$aUser_agent);
+	//$proxy_server="36.251.248.76:80";
+	$proxy_server="";
 	curl_setopt($ch, CURLOPT_URL,$http);
+	curl_setopt($ch, CURLOPT_HTTPHEADER,$header);
 	// 跳过证书检查
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); 
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1); 
 	// 从证书中检查SSL加密算法是否存在
   curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1); 
-	//是否回傳檔頭
-	curl_setopt($ch, CURLOPT_HEADER,0);
-	//是否跟隨 重新導向
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
-	//是否將結果 以字串回傳
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+	//模擬 瀏覽器的User_agent
+	curl_setopt($ch, CURLOPT_USERAGENT,$sUser_agent);
 	//是否啟用 毫秒級等待
 	curl_setopt($ch, CURLOPT_NOSIGNAL,1);
 	//模擬 網頁調用 結果 給他 referer
 	curl_setopt($ch, CURLOPT_REFERER,$sReferer);
-	//模擬 網頁調用 結果 存$cookie
-	curl_setopt($ch, CURLOPT_COOKIEJAR,$cookie_txt);
-	//模擬 網頁調用 結果 送$cookie
-	curl_setopt($ch,CURLOPT_COOKIEFILE,$cookie_txt);
+	//是否跟隨 重新導向
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
+	if($proxy_server!=""){
+		curl_setopt($ch, CURLOPT_PROXY, "$proxy_server");
+	}
+	curl_setopt($ch, CURLOPT_ENCODING , "gzip");
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+	if(file_exists($cookie_txt)){
+		//模擬 網頁調用 結果 送$cookie
+		curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_txt);
+	}else{
+		//模擬 網頁調用 結果 存$cookie
+		curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_txt);
+		//模擬 網頁調用 結果 送$cookie
+		curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_txt);
+	}
+  curl_setopt($ch, CURLOPT_AUTOREFERER, 1); 
 	//最長等待時間 
 	curl_setopt($ch, CURLOPT_TIMEOUT_MS,2000);
-	curl_setopt($ch, CURLOPT_HTTPHEADER,$Host);
-	//模擬 瀏覽器的User_agent
-	curl_setopt($ch, CURLOPT_USERAGENT,$sUser_agent);
+	//是否回傳檔頭
+	curl_setopt($ch, CURLOPT_HEADER,0);
+	curl_setopt($ch, CURLINFO_HEADER_OUT,1);
+	//是否將結果 以字串回傳
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
 	// 執行
 	$str=curl_exec($ch);
 	$info = curl_getinfo($ch);
-	//echo $info." \n ";
-	if($info['http_code']!=200){
-		/*
-		echo '<pre>';
+	if($debug){
+		echo "<pre>";
 		print_r($info);
-		echo '</pre>';
-		*/
+		echo "</pre>";
+	}
+	if($info['http_code']!=200){
 		echo curl_error($ch);
 	}
 	// 關閉CURL連線

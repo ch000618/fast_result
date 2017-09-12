@@ -60,109 +60,79 @@ function init(){
 		break;
 	}
 }
-//新增開獎結果 168新版
+//抓開獎結果 1399p_v2
 /*
-	原本是 抓到後整理格式後 直接進資料庫
-	因為 有碰到開獎號碼是錯的
-	所以 要先把結果存到站台結果表
-	然後 在讀出來 做開獎號碼 比較
-	選用 出現最多次的號碼
-	
-	*整理格式 並且 塞入站台結果表
-	*取出所有站台 號碼進行比對 用大數法則 決定要用哪組號碼
-	*補 日期 跟 當日序號 並更新開獎時間 和 紀錄寫入真正的結果表時間
-	*檢查 有沒有開過獎
-	*開獎完畢 把開獎失敗 改為成功
+	*目錄 判斷
+	*get值 判斷
+	*各種偽裝瀏覽器
+	*寫cookie
+	*讀cookie
+	*允許重新導向
+	傳入:
+		遊戲代碼
+		要開獎的期數名稱
+	回傳:
+		當期結果陣列
 */
-function init_inst_lt_rst_test($sGame){
-	$ret=0;
-	//*整理格式 並且 塞入站台結果表
-	ser_ins_lottery_num_list($sGame);
-	//*取出所有站台 號碼進行比對 用大數法則 決定要用哪組號碼
-	$lt=ser_lottery_num_list_switch_test($sGame);
-	//print_r($lt);
-	if(count($lt)<1){return $ret;}
-	//*補 日期 跟 當日序號 並更新開獎時間 和 紀錄寫入真正的結果表時間
-	$lt_date=mke_lottery_date_list_v2($lt,$sGame);
-	$draws_num=$lt_date[0]['draws_num'];
-	//*檢查 有沒有開過獎
-	$chk_repeat=rst_sel_repeat_result($sGame,$draws_num);
-	if($chk_repeat!=''){return $ret;}
-	//*開獎完畢 把開獎失敗 改為成功
-	$inst_st=inst_lottery_result_v2($sGame,$lt_date);
-	$sys_time=date("Y-m-d H:i:s");
-	UPDATE_sys_time($sGame,$draws_num,$sys_time);
-	//echo $inst_st;
-	if($inst_st==2){
-		$ret=1;
+function ser_set_cookie_1399p(){
+	//產生0-1 之間的亂數
+	$t = mt_rand() / mt_getrandmax();
+	// 建立CURL連線
+	$ch = curl_init();
+	$http = "https://www.1399p.com/";
+	$header[]="Accept:application/json, text/javascript, */*; q=0.01";
+	$header[]="Accept-Encoding:gzip, deflate, br";
+	$header[]="Accept-Language:zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4";
+	$header[]="Connection:keep-alive";
+	$header[]="X-Requested-With:XMLHttpRequest";
+	$cookie_txt=dirname(dirname(__FILE__))."/text/1399p_test.txt";
+	$aUser_agent[]="Mozilla/5.0";
+	$aUser_agent[]="(Windows NT 10.0; WOW64)"; 
+	$aUser_agent[]="AppleWebKit/537.36"; 
+	$aUser_agent[]="(KHTML, like Gecko)"; 
+	$aUser_agent[]="Chrome/53.0.2785.143 Safari/537.36";
+	$sUser_agent=implode('',$aUser_agent);
+	curl_setopt($ch, CURLOPT_URL,$http);
+	// 跳过证书检查
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1); 
+	// 从证书中检查SSL加密算法是否存在
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1); 
+	//是否回傳檔頭
+	curl_setopt($ch, CURLOPT_HEADER,0);
+	curl_setopt($ch, CURLOPT_ENCODING , "gzip");
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+	//是否跟隨 重新導向
+	//curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
+	//是否將結果 以字串回傳
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+	//是否啟用 毫秒級等待
+	curl_setopt($ch, CURLOPT_NOSIGNAL,1);
+	//模擬 網頁調用 結果 存$cookie
+	curl_setopt($ch, CURLOPT_COOKIEJAR,$cookie_txt);
+	//模擬 網頁調用 結果 送$cookie
+	//curl_setopt($ch, CURLOPT_COOKIEFILE,$cookie_txt);
+	//最長等待時間 
+	curl_setopt($ch, CURLOPT_TIMEOUT_MS,2000);
+	curl_setopt($ch, CURLOPT_HTTPHEADER,$header);
+	//模擬 瀏覽器的User_agent
+	curl_setopt($ch, CURLOPT_USERAGENT,$sUser_agent);
+	// 執行
+	$str=curl_exec($ch);
+	$info = curl_getinfo($ch);
+	//echo $info." \n ";
+	/*
+	if($info['http_code']!=200){
+		
+		echo '<pre>';
+		print_r($info);
+		echo '</pre>';
+		
+		echo curl_error($ch);
 	}
-	return $ret;	
-}
-//比對開獎結果 
-/*
-	原本是 抓到後整理格式後 直接進資料庫
-	因為 有碰到開獎號碼是錯的
-	*取得當前 開獎時間的期數
-	*取出這期 所有站台的 做開獎號碼 
-	*只要 一個站台撈不到 就不進行比對
-	*比對 各站號碼出現次數 
-	*選用 出現最多次的號碼
-	*補上期數名稱 開獎時間
-*/
-function ser_lottery_num_list_switch_test($sGame){
-	$aRet=array();
-	//*取得當前 開獎時間的期數
-	$dws=dws_get_now_lottery_info($sGame);
-	$draws=$dws['draws_num'];
-	//*取出這期 所有站台的 做開獎號碼 比較
-	$sSite='168new';
-	$ary_168new=ser_get_lottery_site_list_exist($sGame,$sSite,$draws);
-	
-	$sSite='1399p';
-	$ary_1399p=ser_get_lottery_site_list_exist($sGame,$sSite,$draws);
-	$ary_lianju=mke_lottery_num_list_lianju($sGame);
-	$aContrast=array();
-	if(!empty($ary_168new)){
-		$aContrast['168new']=implode('_',$ary_168new);
-	}
-	
-	if(!empty($ary_1399p)){
-		$aContrast['1399p']=implode('_',$ary_1399p);
-	}
-	if(!empty($ary_lianju)){
-		$aContrast['lianju']=implode('_',$ary_lianju);
-	}
-	print_r($aContrast);
-	//*因為要比對 至少要有兩組 才會開始比
-	if(count($aContrast)<2){
-		return $aRet;
-	}
-	//*選用 出現最多次的號碼
-	$aANS=array_count_values($aContrast);
-	$aANS =array_flip($aANS);
-	krsort($aANS);
-	$sANS=current($aANS);
-	$new_array=array();
-	//*補上期數名稱 開獎時間
-	$lottery_time=ser_get_lottery_time($sGame,$draws);
-	$new_array_data['draws_num']=$draws;
-	$new_array_num=explode('_',$sANS);
-	$new_array_data['lottery_Time']=$lottery_time;
-	$new_array_num['total_sum']=array_sum($new_array_num);
-	if($sGame=='pk'){
-		$new_array_num['total_sum']=$new_array_num[0]+$new_array_num[1];
-	}
-	if($sGame=='kb'){
-		$aNum_kb=array(
-			$new_array_num[0],$new_array_num[1],$new_array_num[2],$new_array_num[3],$new_array_num[4],$new_array_num[5],
-			$new_array_num[6],$new_array_num[7],$new_array_num[8],$new_array_num[9],$new_array_num[10],$new_array_num[11],
-			$new_array_num[12],$new_array_num[13],$new_array_num[14],$new_array_num[15],$new_array_num[16],$new_array_num[17],
-			$new_array_num[18],$new_array_num[19]
-		);
-		$new_array_num['total_sum']=array_sum($aNum_kb);
-	}
-	$new_array=array_merge($new_array_data,$new_array_num);
-	$aRet=$new_array;
-	return $aRet;
+	*/
+	// 關閉CURL連線
+	curl_close($ch);
+	$obj=json_decode($str,true);
+	return $obj;
 }
 ?>
