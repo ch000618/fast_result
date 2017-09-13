@@ -24,7 +24,7 @@ function ser_ins_lottery_num_list_v2($sGame){
 	
 	$lottery_num_list1399p['1399p']=mke_lottery_num_list_1399p_v2($sGame);
 	
-	$lottery_num_listlianju['lianju']=mke_lottery_num_list_lianju($sGame);
+	$lottery_num_listcp908['cp908']=mke_lottery_num_list_cp908($sGame);
 	
 	$lottery_num_list91333['91333']=mke_lottery_num_list_91333($sGame);
 	
@@ -41,10 +41,11 @@ function ser_ins_lottery_num_list_v2($sGame){
 	if(!empty($lottery_num_list1399p['1399p'])){
 		inst_lottery_site_list($sGame,$lottery_num_list1399p);
 	}
-		
-	if(!empty($lottery_num_listlianju['lianju'])){
-		inst_lottery_site_list($sGame,$lottery_num_listlianju);
+	
+	if(!empty($lottery_num_listcp908['cp908'])){
+		inst_lottery_site_list($sGame,$lottery_num_listcp908);
 	}
+		
 	
 	if(!empty($lottery_num_list91333['91333'])){
 		inst_lottery_site_list($sGame,$lottery_num_list91333);
@@ -68,24 +69,16 @@ function ser_ins_lottery_num_list_v2($sGame){
 */
 function ser_chk_update_site_result_table($sGame){
 	global $db;
-	$hislist_list_lianju=mke_hislist_num_list_lianju($sGame);
 	$hislist_list_168new=mke_hislist_num_list_168new($sGame);
 	$hislist_list_91333=mke_hislist_num_list_91333($sGame);
 	$hislist_list_98007=mke_hislist_num_list_98007($sGame);
 	$hislist_list_un=mke_hislist_num_list_un($sGame);
-	//$hislist_list_ju888=mke_hislist_num_list_ju888($sGame);
 	$db->beginTransaction();//交易機制開始
-	if(count($hislist_list_lianju)>1){
-		foreach($hislist_list_lianju as $key => $value){
-			inst_hislist_site_result_table($sGame,$value);
-		}
-	}
 	if(count($hislist_list_168new)>1){
 		foreach($hislist_list_168new as $key => $value){
 			inst_hislist_site_result_table($sGame,$value);
 		}
 	}
-	
 	if(count($hislist_list_91333)>1){
 		foreach($hislist_list_91333 as $key => $value){
 			inst_hislist_site_result_table($sGame,$value);
@@ -97,7 +90,6 @@ function ser_chk_update_site_result_table($sGame){
 			inst_hislist_site_result_table($sGame,$value);
 		}
 	}
-	
 	if(count($hislist_list_un)>1){
 		foreach($hislist_list_un as $key => $value){
 			inst_hislist_site_result_table($sGame,$value);

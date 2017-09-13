@@ -91,6 +91,7 @@ function main(){
 	$aHtml[]='<option value="168new">168</option>';
 	$aHtml[]='<option value="98007">98彩票網</option>';
 	$aHtml[]='<option value="91333">彩之家</option>';
+	$aHtml[]='<option value="cp908">盛世</option>';
 	$aHtml[]='</select>';
 	$aHtml[]='</br></br>';
 	$aHtml[]='日期';
@@ -150,6 +151,7 @@ function send_result_ui(){
 	$aHtml[]='<option value="168new">168</option>';
 	$aHtml[]='<option value="98007">98彩票網</option>';
 	$aHtml[]='<option value="91333">彩之家</option>';
+	$aHtml[]='<option value="cp908">盛世</option>';
 	$aHtml[]='</select>';
 	$aHtml[]='<select id="receive_site" name="receive_site"></br></br>';
 	foreach($aWebHost as $k =>$v){

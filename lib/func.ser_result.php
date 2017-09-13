@@ -1194,49 +1194,39 @@ function mke_lottery_num_list_168old($sGame){
 	*檢查 陣列格式
 	*檢查 是否開獎
 */
-function mke_lottery_num_list_1399p($sGame){
+function mke_lottery_num_list_cp908($sGame){
 	$aRet=array();
-	$aRet=mke_lottery_num_list_1399p_v2($sGame);
-	return $aRet;
-	$lt=ser_get_result_1399p($sGame);
+	$lt=ser_get_result_cp908($sGame);
 	//print_r($lt);
 	//檢查 獎號是否 有抓到
 	if(count($lt)<1){
 		return $aRet;
 	}
-	//檢查 陣列格式
 	switch($sGame){
+		case 'klc':
+			$periodDate=$lt['current']['periodNumberStr'];
+			$periodDate=str_replace('-','',$periodDate);
+			break;
+		case 'ssc':
+			$periodDate=$lt['current']['periodNumberStr'];
+			$periodDate=str_replace('-','',$periodDate);
+			break;
 		case 'nc':
-			$periodDate=$lt['current']['period'];
-			break;
-		case 'kb':
-			$periodDate=$lt['current']['periodNumber'];
-			break;
-		case 'pk':
-			$periodDate=$lt['current']['periodNumber'];
+			$periodDate=$lt['current']['periodNumberStr'];
+			$periodDate=str_replace('-','',$periodDate);
 			break;
 		default:
-			$periodDate=$lt['current']['periodDate'];
+			$periodDate=$lt['current']['periodNumber'];
 			break;
 	}
 	$awardNumbers=$lt['current']['awardNumbers'];
-	$awardTime=$lt['current']['awardTime'];
+	$sLtTime=$lt['current']['awardTime'];
+	$sAwardTime=date("Y-m-d H:i:s",strtotime($sLtTime));
 	//檢查 抓回的獎號 是否為空結果
 	if($periodDate=='0' || $periodDate==''){
 		return $aRet;
 	}
 	$sDraws_num=$periodDate;
-	if($sGame=='ssc'){
-		$isn=(int)substr($periodDate,8,10);
-		if($isn<100){
-			$sn="0".$isn;
-		}else if($isn<10){
-			$sn="00".$isn;
-		}else{
-			$sn=$isn;
-		}
-		$sDraws_num=substr($periodDate,0,8).$sn;
-	}
 	if($sGame=='nc' || $sGame=='klc'){
 		$isn=(int)substr($periodDate,8,10);
 		if($isn<10){
@@ -1245,7 +1235,6 @@ function mke_lottery_num_list_1399p($sGame){
 			$sn=$isn;
 		}
 		$sDraws_num=substr($periodDate,0,8).$sn;
-		//echo $sDraws_num;
 	}
 	$aDraws_num=array('draws_num'=>$sDraws_num);
 	$aNums=explode(',',$awardNumbers);
@@ -1262,7 +1251,7 @@ function mke_lottery_num_list_1399p($sGame){
 		$aNum[20]=$lt['current']['pan'];
 	}
 	$aRet=array_merge($aDraws_num,$aNum);
-	$aRet['lottery_Time']=$awardTime;
+	$aRet['lottery_Time']=$sAwardTime;
 	$aRet['total_sum']=array_sum($aNum);
 	if($sGame=='pk'){
 		$aRet['total_sum']=$aNum[0]+$aNum[1];
@@ -1283,20 +1272,26 @@ function mke_lottery_num_list_1399p($sGame){
 	*檢查 是否開獎
 */
 function mke_lottery_num_list_1399p_v2($sGame){
-	$debug=true;
+	$debug=false;
 	if($debug){
-		echo "exec : mke_lottery_num_list_1399p_v2 \n";
+		echo '<pre>';
+		echo "exec : mke_lottery_num_list_1399p_v2 $sGame";
+		echo '</pre>';
 	}
 	$aRet=array();
 	$lt=ser_get_result_1399p_v2($sGame);
+	if($debug){
+		echo '<pre>';
+		print_r($lt);
+		echo '</pre>';
+	}
 	$dws=dws_get_now_lottery_info($sGame);
 	$sDraws=$dws['draws_num'];
-	//print_r($lt);
 	//檢查 獎號是否 有抓到
 	if(count($lt)<1){
 		return $aRet;
 	}
-	//檢查 陣列格式
+	//檢查 日期型期數名稱格式
 	switch($sGame){
 		case 'klc':
 			$sDraws_sn=(int)substr($sDraws,8,10);
@@ -1333,34 +1328,24 @@ function mke_lottery_num_list_1399p_v2($sGame){
 	$awardNumbers=$lt['current']['result'];
 	$awardNumbers=str_replace('#',',',$awardNumbers);
 	$awardTime=$lt['current']['awardTime'];
+	$daytime=date("Y-m-d 00:00:00");
+	if($debug){
+		echo '<pre>';
+		echo strtotime($awardTime);
+		echo '</pre>';
+		echo '<pre>';
+		echo strtotime($daytime);
+		echo '</pre>';
+	}
+	//檢查 開獎時間 小於今天 因為發現會抓到前幾天的號碼
+	if(strtotime($awardTime) < strtotime($daytime)){
+		return $aRet;
+	}
 	//檢查 抓回的獎號 是否為空結果
 	if($periodDate=='0' || $periodDate==''){
 		return $aRet;
 	}
 	$sDraws_num=$periodDate;
-	/*
-	if($sGame=='ssc'){
-		$isn=(int)substr($periodDate,8,10);
-		if($isn<100){
-			$sn="0".$isn;
-		}else if($isn<10){
-			$sn="00".$isn;
-		}else{
-			$sn=$isn;
-		}
-		$sDraws_num=substr($periodDate,0,8).$sn;
-	}
-	if($sGame=='nc' || $sGame=='klc'){
-		$isn=(int)substr($periodDate,8,10);
-		if($isn<10){
-			$sn="0".$isn;
-		}else{
-			$sn=$isn;
-		}
-		$sDraws_num=substr($periodDate,0,8).$sn;
-		//echo $sDraws_num;
-	}
-	*/
 	$aDraws_num=array('draws_num'=>$sDraws_num);
 	$aNums=explode(',',$awardNumbers);
 	foreach($aNums as $k => $v){
@@ -1373,7 +1358,6 @@ function mke_lottery_num_list_1399p_v2($sGame){
 			$aNum[12],$aNum[13],$aNum[14],$aNum[15],$aNum[16],$aNum[17],
 			$aNum[18],$aNum[19]
 		);
-		//$aNum[20]=$lt['current']['pan'];
 	}
 	$aRet=array_merge($aDraws_num,$aNum);
 	$aRet['lottery_Time']=$awardTime;
@@ -1649,7 +1633,7 @@ function ser_get_result_cp0668($sGame){
 	//print_r($obj);
 	return $obj;
 }
-//抓開獎結果 1399p
+//抓開獎結果 cp908
 /*
 	*目錄 判斷
 	*get值 判斷
@@ -1663,61 +1647,107 @@ function ser_get_result_cp0668($sGame){
 	回傳:
 		當期結果陣列
 */
-function ser_get_result_1399p($sGame){
-	$root_name=array();
+function ser_get_result_cp908($sGame){
+	$debug=true;
+	$aRoot_name=array();
+	$aFile=array();
+	$aAjaxhandler=array();
 	//新版網站 都放在不同的目錄
-	$root_name['klc']='gdkl10';
-	$root_name['ssc']='shishicai';
-	$root_name['pk']='pk10';
-	$root_name['nc']='xync';
-	$root_name['kb']='kl8';
-	$do_name=array();
-	//1399p網站 每個遊戲有自己的get值
-	$do_name['klc']='GetGdkl10AwardData';
-	$do_name['ssc']='GetCqsscAwardData';
-	$do_name['nc']='GetXyncAwardData';
-	$do_name['pk']='GetPk10AwardData';
-	$do_name['kb']='Getkl8AwardData';
-	$game_root=$root_name[$sGame];
-	$game_do=$do_name[$sGame];
+	$aRoot_name['klc']='gdkl10';
+	$aRoot_name['ssc']='shishicai';
+	$aRoot_name['pk']='pk10';
+	$aRoot_name['nc']='xync';
+	$aRoot_name['kb']='kl8';
+	//cp908網站 每個遊戲 都有自己的檔案
+	$aFile['klc']='getGdkl10AwardData.do';
+	$aFile['ssc']='getCqsscAwardData.do';
+	$aFile['nc']='getXyncAwardData.do';
+	$aFile['pk']='getPk10AwardData.do';
+	$aFile['kb']='getkl8AwardData.do';
+	//cp908網站 每個遊戲 都有自己的命令
+	$aAjaxhandler['klc']='GetGdkl10AwardData';
+	$aAjaxhandler['ssc']='GetCqsscAwardData';
+	$aAjaxhandler['nc']='GetXyncAwardData';
+	$aAjaxhandler['pk']='GetPk10AwardData';
+	$aAjaxhandler['kb']='Getkl8AwardData';
+
+	$sGame_root=$aRoot_name[$sGame];
+	$sGame_file=$aFile[$sGame];
 	//產生0-1 之間的亂數
 	$t = mt_rand() / mt_getrandmax();
+	$t.= mt_rand(0,999);
+	$sCookie_txt=dirname(dirname(__FILE__))."/text/cp908.txt";
+	$http = "https://www.cp908.cc/$sGame_root/$sGame_file?$t";
+	$aReferer[]="https://www.cp908.cc/";
+	$sReferer=implode('',$aReferer);
 	// 建立CURL連線
 	$ch = curl_init();
-	$http = "http://www.1395p.com/$game_root/ajax?ajaxhandler=$game_do&t=$t";
-	$aReferer[]="http://www.1395p.com/api";
-	$aReferer[]="/kaijiang.html?lottery=pk10,cqssc,gdkl10,kl8,xync";
-	$aReferer[]="&set=$game_root&bgcolor=e0e0e0&size=980&hgt=35";
-	$sReferer=implode('',$aReferer);
-	$cookie_txt=dirname(dirname(__FILE__))."/text/1395p.txt";
+	if($debug){
+		echo "<pre>";
+		echo $sCookie_txt;
+		echo "</pre>";
+	}
+	$aHeader[]="Host: www.cp908.cc";
+	$aHeader[]="Accept: application/json, text/javascript, */*; q=0.01";
+	$aHeader[]="Accept-Encoding: gzip, deflate, br";
+	$aHeader[]="Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4";
+	$aHeader[]="Connection: keep-alive";
+	$aHeader[]="X-Requested-With: XMLHttpRequest";
 	$aUser_agent[]="Mozilla/5.0";
 	$aUser_agent[]="(Windows NT 10.0; WOW64)"; 
 	$aUser_agent[]="AppleWebKit/537.36"; 
 	$aUser_agent[]="(KHTML, like Gecko)"; 
 	$aUser_agent[]="Chrome/53.0.2785.143 Safari/537.36";
 	$sUser_agent=implode('',$aUser_agent);
-	curl_setopt($ch,CURLOPT_URL,$http);
-	//是否回傳檔頭
-	curl_setopt($ch,CURLOPT_HEADER,0);
-	//是否跟隨 重新導向
-	curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);
-	//是否將結果 以字串回傳
-	curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-	//是否啟用 毫秒級等待
-	curl_setopt($ch,CURLOPT_NOSIGNAL,1);
-	//模擬 網頁調用 結果 給他 referer
-	curl_setopt($ch,CURLOPT_REFERER,$sReferer);
-	//模擬 網頁調用 結果 存$cookie
-	curl_setopt($ch,CURLOPT_COOKIEJAR,$cookie_txt);
-	//模擬 網頁調用 結果 送$cookie
-	curl_setopt($ch,CURLOPT_COOKIEFILE,$cookie_txt);
-	//最長等待時間 
-	curl_setopt($ch,CURLOPT_TIMEOUT_MS,2000);
-	//curl_setopt($ch,CURLOPT_CONNECTTIMEOUT_MS,1000);
+	$proxy_server="";
+	curl_setopt($ch, CURLOPT_URL,$http);
+	//使用自定義 請求頭
+	curl_setopt($ch, CURLOPT_HTTPHEADER,$aHeader);
+	// 跳过证书检查
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1); 
+	// 从证书中检查SSL加密算法是否存在
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
+	curl_setopt($ch, CURLOPT_SSLVERSION, 1);
 	//模擬 瀏覽器的User_agent
-	curl_setopt($ch,CURLOPT_USERAGENT,$sUser_agent);
+	curl_setopt($ch, CURLOPT_USERAGENT,$sUser_agent);
+	//是否啟用 毫秒級等待
+	curl_setopt($ch, CURLOPT_NOSIGNAL,1);
+	//模擬 網頁調用 結果 給他 referer
+	curl_setopt($ch, CURLOPT_REFERER,$sReferer);
+	//是否跟隨 重新導向
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
+	//如果有設定 proxy 的話就是使用
+	if($proxy_server!=""){
+		curl_setopt($ch, CURLOPT_PROXY, "$proxy_server");
+	}
+	//這個站 有用gzip 所有要解壓
+	curl_setopt($ch, CURLOPT_ENCODING ,"gzip");
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST,'GET');
+	//cookie 檔案存在的話 就直接送
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $sCookie_txt);
+	curl_setopt($ch, CURLOPT_COOKIEFILE, $sCookie_txt);
+	//自動設置 referer
+  curl_setopt($ch, CURLOPT_AUTOREFERER, 1); 
+	//最長等待時間 
+	curl_setopt($ch, CURLOPT_TIMEOUT_MS,3000);
+	//是否回傳檔頭
+	curl_setopt($ch, CURLOPT_HEADER,0);
+	//是否 回傳檔頭 到CURLINFO
+	curl_setopt($ch, CURLINFO_HEADER_OUT,1);
+	//是否將結果 以字串回傳
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
 	// 執行
 	$str=curl_exec($ch);
+	$info = curl_getinfo($ch);
+	if($debug){
+		echo "<pre>";
+		print_r(curl_version());
+		print_r($info);
+		echo "</pre>";
+	}
+	if($info['http_code']!=200){
+		echo curl_error($ch);
+	}
 	// 關閉CURL連線
 	curl_close($ch);
 	$obj=json_decode($str,true);
@@ -1775,11 +1805,12 @@ function ser_get_result_1399p_v2($sGame){
 	//$proxy_server="36.251.248.76:80";
 	$proxy_server="";
 	curl_setopt($ch, CURLOPT_URL,$http);
+	//使用自定義 請求頭
 	curl_setopt($ch, CURLOPT_HTTPHEADER,$header);
 	// 跳过证书检查
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1); 
 	// 从证书中检查SSL加密算法是否存在
-  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1); 
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
 	//模擬 瀏覽器的User_agent
 	curl_setopt($ch, CURLOPT_USERAGENT,$sUser_agent);
 	//是否啟用 毫秒級等待
@@ -1788,11 +1819,14 @@ function ser_get_result_1399p_v2($sGame){
 	curl_setopt($ch, CURLOPT_REFERER,$sReferer);
 	//是否跟隨 重新導向
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
+	//如果有設定 proxy 的話就是使用
 	if($proxy_server!=""){
 		curl_setopt($ch, CURLOPT_PROXY, "$proxy_server");
 	}
+	//這個站 有用gzip 所有要解壓
 	curl_setopt($ch, CURLOPT_ENCODING , "gzip");
 	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+	//cookie 檔案存在的話 就直接送
 	if(file_exists($cookie_txt)){
 		//模擬 網頁調用 結果 送$cookie
 		curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_txt);
@@ -1802,11 +1836,13 @@ function ser_get_result_1399p_v2($sGame){
 		//模擬 網頁調用 結果 送$cookie
 		curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_txt);
 	}
+	//自動設置 referer
   curl_setopt($ch, CURLOPT_AUTOREFERER, 1); 
 	//最長等待時間 
 	curl_setopt($ch, CURLOPT_TIMEOUT_MS,2000);
 	//是否回傳檔頭
 	curl_setopt($ch, CURLOPT_HEADER,0);
+	//是否 回傳檔頭 到CURLINFO
 	curl_setopt($ch, CURLINFO_HEADER_OUT,1);
 	//是否將結果 以字串回傳
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
