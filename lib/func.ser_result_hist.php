@@ -361,6 +361,108 @@ function mke_hislist_num_list_168new($sGame,$sRpt_date=''){
 	}
 	return $aRet;
 }
+//拆解歷史結果的陣列 cp908
+/*
+傳入
+	遊戲
+	日期
+回傳
+	Array(
+		[index]=>
+			Array(
+				[draws_num] => 期數名稱
+				[0] => 1 //各球結果 會遊戲不同 而 有不同球數
+				[1] => 2
+				[2] => 3
+				[3] => 4
+				[4] => 5
+				[lottery_time] => 開獎時間
+				[total_sum] => 15 //總和
+		)
+	)
+*170409 因為 之後可能會去抓各站的 歷史列表 所以抓出跟 整理格式 一起做會比較好處理
+*curl 抓獎號列表
+*只取期數 和號碼
+*計算總和
+*只有北京賽車是用前兩個的和
+*快樂8 有快樂飛盤的關係 總和只算前20個號碼
+*/
+function mke_hislist_num_list_cp908($sGame){
+	$aRet=array();
+	//$dws=dws_get_now_lottery_info($sGame);
+	$sRpt_date=date('Y-m-d');
+	if($sRpt_date==''){return $aRet;}
+	$lt=ser_get_hislist_result_cp908($sGame,$sRpt_date);
+	/*
+	echo '<xmp>';
+	print_r($lt);
+	echo '</xmp>';
+	*/
+	$aGame_ball_cnt['klc']=8;
+	$aGame_ball_cnt['ssc']=5;
+	$aGame_ball_cnt['pk']=10;
+	$aGame_ball_cnt['nc']=8;
+	$aGame_ball_cnt['kb']=20;
+	$iBall_cnt=$aGame_ball_cnt[$sGame];
+	$data=$lt['rows'];
+	if(count($data)<1){return $aRet;}
+	foreach($data as $key => $value){
+		if($value['termNum']==''){continue;}
+		for($i=1;$i<=$iBall_cnt;$i++){
+			$ball_key="n".$i;
+			//echo $ball_key;
+			$num=$value[$ball_key];
+			$aNum[$i]=$num;
+		}
+		switch($sGame){
+			case 'klc':
+				$sDraws_num=$value['termNum'];
+				$sDraws_num=str_replace('-','',$sDraws_num);
+				break;
+			case 'ssc':
+				$sDraws_num=$value['termNum'];
+				$sDraws_num=str_replace('-','',$sDraws_num);
+				break;
+			case 'nc':
+				$sDraws_num=$value['termNum'];
+				$sDraws_num=str_replace('-','',$sDraws_num);
+				break;
+			default:
+				$sDraws_num=$value['termNum'];
+				break;
+		}
+		if($sGame=='nc' || $sGame=='klc'){
+			$isn=(int)substr($sDraws_num,8,10);
+			if($isn<10){
+				$sn="0".$isn;
+			}else{
+				$sn=$isn;
+			}
+			$sDraws_num=substr($sDraws_num,0,8).$sn;
+		}
+		$aDraws_num=array('draws_num'=>$sDraws_num);
+		//將文字檔的開獎時間轉成 資料庫的格式
+		$sTime_lottery=$value['lotteryTime'];
+		$aRet[$key]=array_merge($aDraws_num,$aNum);
+		$aRet[$key]['lottery_Time']=$value['lotteryTime'];
+		//計算總和
+		$aRet[$key]['total_sum']=array_sum($aNum);
+		//只有北京賽車是用前兩個的和
+		if($sGame=='pk'){$aRet[$key]['total_sum']=$aNum[0]+$aNum[1];}
+		//kb因為有快樂飛盤的關係 總和長這樣
+		if($sGame=='kb'){
+			$nums_kb=array(
+				$aNum[0],$aNum[1],$aNum[2],$aNum[3],$aNum[4],$aNum[5],
+				$aNum[6],$aNum[7],$aNum[8],$aNum[9],$aNum[10],$aNum[11],
+				$aNum[12],$aNum[13],$aNum[14],$aNum[15],$aNum[16],$aNum[17],
+				$aNum[18],$aNum[19]
+			);
+			$aRet[$key]['total_sum']=array_sum($nums_kb);
+		}
+		$aRet[$key]['site']='cp908';
+	}
+	return $aRet;
+}
 //取得 連鉅 今天到目前為止 的所有結果
 /*
 	*取得	目前開獎的日期
@@ -818,6 +920,125 @@ function ser_get_hislist_result_168new($sGame,$sRpt_date=''){
 	//echo $str;
 	$obj=json_decode($str,true);
 	//print_r($obj);
+	return $obj;
+}
+//抓開獎結果 cp908
+/*
+	*目錄 判斷
+	*get值 判斷
+	*各種偽裝瀏覽器
+	*寫cookie
+	*讀cookie
+	*允許重新導向
+	傳入:
+		遊戲代碼
+	回傳:
+		歷史結果陣列
+*/
+function ser_get_hislist_result_cp908($sGame,$sRpt_date){
+	$debug=false;
+	$aRoot_name=array();
+	$aFile=array();
+	$aGame_count=array();
+	//新版網站 都放在不同的目錄
+	$aRoot_name['klc']='gdkl10';
+	$aRoot_name['ssc']='shishicai';
+	$aRoot_name['pk']='pk10';
+	$aRoot_name['nc']='xync';
+	$aRoot_name['kb']='kl8';
+	//cp908網站 每個遊戲 都有自己的檔案
+	$aFile['klc']="getHistoryData.do";
+	$aFile['ssc']="getHistoryData.do";
+	$aFile['nc']="getHistoryData.do";
+	$aFile['pk']="kaijiang.do?date=$sRpt_date";
+	$aFile['kb']="getHistoryData.do";
+	
+	$aGame_count['klc']=120;
+	$aGame_count['ssc']=120;
+	$aGame_count['pk']='';
+	$aGame_count['nc']=120;
+	$aGame_count['kb']=180;
+	
+	$iGame_count=$aGame_count[$sGame];
+
+	$sGame_root=$aRoot_name[$sGame];
+	$sGame_file=$aFile[$sGame];
+	$sCookie_txt=dirname(dirname(__FILE__))."/text/cp908.txt";
+	$http = "https://www.cp908.cc/$sGame_root/$sGame_file";
+	$aReferer[]="https://www.cp908.cc/";
+	$sReferer=implode('',$aReferer);
+	// 建立CURL連線
+	$ch = curl_init();
+	if($debug){
+		echo "<pre>";
+		echo $sCookie_txt;
+		echo "</pre>";
+	}
+	$aHeader[]="Host: www.cp908.cc";
+	$aHeader[]="Accept: application/json, text/javascript, */*; q=0.01";
+	$aHeader[]="Accept-Encoding: gzip, deflate, br";
+	$aHeader[]="Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4";
+	$aHeader[]="Connection: keep-alive";
+	$aHeader[]="X-Requested-With: XMLHttpRequest";
+	$aUser_agent[]="Mozilla/5.0";
+	$aUser_agent[]="(Windows NT 10.0; WOW64)"; 
+	$aUser_agent[]="AppleWebKit/537.36"; 
+	$aUser_agent[]="(KHTML, like Gecko)"; 
+	$aUser_agent[]="Chrome/53.0.2785.143 Safari/537.36";
+	$sUser_agent=implode('',$aUser_agent);
+	$proxy_server="";
+	curl_setopt($ch, CURLOPT_URL,$http);
+	//使用自定義 請求頭
+	curl_setopt($ch, CURLOPT_HTTPHEADER,$aHeader);
+	// 跳过证书检查
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1); 
+	// 从证书中检查SSL加密算法是否存在
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
+	curl_setopt($ch, CURLOPT_SSLVERSION, 1);
+	//模擬 瀏覽器的User_agent
+	curl_setopt($ch, CURLOPT_USERAGENT,$sUser_agent);
+	//是否啟用 毫秒級等待
+	curl_setopt($ch, CURLOPT_NOSIGNAL,1);
+	//模擬 網頁調用 結果 給他 referer
+	curl_setopt($ch, CURLOPT_REFERER,$sReferer);
+	//是否跟隨 重新導向
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
+	if($sGame!='pk'){
+		curl_setopt($ch, CURLOPT_POST,1); // 啟用POST
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(array("count"=>"$iGame_count","date"=>"$sRpt_date"))); 
+	}
+	//如果有設定 proxy 的話就是使用
+	if($proxy_server!=""){
+		curl_setopt($ch, CURLOPT_PROXY, "$proxy_server");
+	}
+	//這個站 有用gzip 所有要解壓
+	curl_setopt($ch, CURLOPT_ENCODING ,"gzip");
+	curl_setopt($ch, CURLOPT_COOKIEFILE, $sCookie_txt);
+	//自動設置 referer
+  curl_setopt($ch, CURLOPT_AUTOREFERER, 1); 
+	//最長等待時間 
+	curl_setopt($ch, CURLOPT_TIMEOUT_MS,3000);
+	//是否回傳檔頭
+	curl_setopt($ch, CURLOPT_HEADER,0);
+	//是否 回傳檔頭 到CURLINFO
+	curl_setopt($ch, CURLINFO_HEADER_OUT,1);
+	//是否將結果 以字串回傳
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+	// 執行
+	$str=curl_exec($ch);
+	$info = curl_getinfo($ch);
+	if($debug){
+		echo "<pre>";
+		print_r(curl_version());
+		print_r($info);
+		echo "</pre>";
+	}
+	if($info['http_code']!=200){
+		echo curl_error($ch);
+	}
+	// 關閉CURL連線
+	curl_close($ch);
+	$obj=json_decode($str,true);
 	return $obj;
 }
 //取某張站台表 某幾期的開獎結果 

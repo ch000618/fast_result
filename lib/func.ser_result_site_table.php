@@ -70,6 +70,7 @@ function ser_ins_lottery_num_list_v2($sGame){
 function ser_chk_update_site_result_table($sGame){
 	global $db;
 	$hislist_list_168new=mke_hislist_num_list_168new($sGame);
+	$hislist_list_cp908=mke_hislist_num_list_cp908($sGame);
 	$hislist_list_91333=mke_hislist_num_list_91333($sGame);
 	$hislist_list_98007=mke_hislist_num_list_98007($sGame);
 	$hislist_list_un=mke_hislist_num_list_un($sGame);
@@ -84,7 +85,11 @@ function ser_chk_update_site_result_table($sGame){
 			inst_hislist_site_result_table($sGame,$value);
 		}
 	}
-	
+	if(count($hislist_list_cp908)>1){
+		foreach($hislist_list_cp908 as $key => $value){
+			inst_hislist_site_result_table($sGame,$value);
+		}
+	}
 	if(count($hislist_list_98007)>1){
 		foreach($hislist_list_98007 as $key => $value){
 			inst_hislist_site_result_table($sGame,$value);

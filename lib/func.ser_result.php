@@ -1196,6 +1196,7 @@ function mke_lottery_num_list_168old($sGame){
 */
 function mke_lottery_num_list_cp908($sGame){
 	$aRet=array();
+	ser_get_cookie_cp908();
 	$lt=ser_get_result_cp908($sGame);
 	//print_r($lt);
 	//檢查 獎號是否 有抓到
@@ -1633,6 +1634,76 @@ function ser_get_result_cp0668($sGame){
 	//print_r($obj);
 	return $obj;
 }
+//收集 cp908 cookie 模擬瀏覽器行為
+/*
+	curl 到cp908 驗證頁 取得cookie
+	
+*/
+function ser_get_cookie_cp908(){
+	$debug=true;
+	$aHeader=array();
+	$aUser_agent=array();
+	$sReferer=array();
+	$sCookie_txt=dirname(dirname(__FILE__))."/text/cp908.txt";
+	$aHeader[]="Host: www.cp908.cc";
+	$aHeader[]="Origin: https://www.cp908.cc";
+	$aHeader[]="Accept: application/json, text/javascript, */*; q=0.01";
+	$aHeader[]="Accept-Encoding: gzip, deflate, br";
+	$aHeader[]="Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4";
+	$aHeader[]="Connection: keep-alive";
+	$aHeader[]="Content-Length:0";
+	$aHeader[]="X-Requested-With: XMLHttpRequest";
+	$aUser_agent[]="Mozilla/5.0";
+	$aUser_agent[]="(Windows NT 10.0; WOW64)"; 
+	$aUser_agent[]="AppleWebKit/537.36"; 
+	$aUser_agent[]="(KHTML, like Gecko)"; 
+	$aUser_agent[]="Chrome/53.0.2785.143 Safari/537.36";
+	$sUser_agent=implode('',$aUser_agent);
+	$aReferer[]="https://www.cp908.cc/";
+	$sReferer=implode('',$aReferer);
+	$http="https://www.cp908.cc/ucaccount/checkLogin.do";
+	if(file_exists($sCookie_txt)){
+		if($debug){
+			echo "<pre>";
+			echo 'Cookie exists';
+			echo "</pre>";
+		}
+		return ;
+	}
+	if($debug){
+		echo "<pre>";
+		echo 'no_Cookie :set_Cookie';
+		echo "</pre>";
+	}
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL,$http);
+	// 跳过证书检查
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1); 
+	// 从证书中检查SSL加密算法是否存在
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
+	curl_setopt($ch, CURLOPT_SSLVERSION, 1);
+	//自動設置 referer
+  curl_setopt($ch, CURLOPT_AUTOREFERER, 1); 
+	curl_setopt($ch, CURLOPT_COOKIEJAR, $sCookie_txt);
+	curl_setopt($ch, CURLOPT_HEADER,0);
+	//是否 回傳檔頭 到CURLINFO
+	curl_setopt($ch, CURLINFO_HEADER_OUT,1);
+	//是否將結果 以字串回傳
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+	//模擬 網頁調用 結果 給他 referer
+	curl_setopt($ch, CURLOPT_REFERER,$sReferer);
+	// 執行
+	$str=curl_exec($ch);
+	$info = curl_getinfo($ch);
+	if($debug){
+		echo "<pre>";
+		print_r(curl_version());
+		print_r($info);
+		echo "</pre>";
+	}
+	// 關閉CURL連線
+	curl_close($ch);
+}
 //抓開獎結果 cp908
 /*
 	*目錄 判斷
@@ -1643,12 +1714,11 @@ function ser_get_result_cp0668($sGame){
 	*允許重新導向
 	傳入:
 		遊戲代碼
-		要開獎的期數名稱
 	回傳:
 		當期結果陣列
 */
 function ser_get_result_cp908($sGame){
-	$debug=true;
+	$debug=false;
 	$aRoot_name=array();
 	$aFile=array();
 	$aAjaxhandler=array();
@@ -1724,7 +1794,6 @@ function ser_get_result_cp908($sGame){
 	curl_setopt($ch, CURLOPT_ENCODING ,"gzip");
 	curl_setopt($ch, CURLOPT_CUSTOMREQUEST,'GET');
 	//cookie 檔案存在的話 就直接送
-	curl_setopt($ch, CURLOPT_COOKIEJAR, $sCookie_txt);
 	curl_setopt($ch, CURLOPT_COOKIEFILE, $sCookie_txt);
 	//自動設置 referer
   curl_setopt($ch, CURLOPT_AUTOREFERER, 1); 
