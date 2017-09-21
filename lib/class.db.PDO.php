@@ -120,14 +120,20 @@ class db_PDO{
         echo "errorCode=$errorCode\n";
         $this->errorstatus($sql,$e);
         $this->result = false;
-        if($this->beginTransaction==1){ $this->link->rollBack(); }
+        if($this->beginTransaction==1){ 
+					$this->beginTransaction=0;    
+					$this->link->rollBack(); 
+				}
         $msg="#03!";
         //$msg.=$sql;
         die($msg);
       }else{
         $this->errorstatus($sql,$e);
         $this->result = false;
-        if($this->beginTransaction==1){ $this->link->rollBack(); }
+        if($this->beginTransaction==1){ 
+					$this->beginTransaction=0;    
+					$this->link->rollBack(); 
+				}
 			}
 		}
 		return $result;
@@ -158,6 +164,7 @@ class db_PDO{
   }
   //結束交易
   Function commit(){
+		if($this->beginTransaction == 0){return ;}
     $this->beginTransaction=0;
     $this->link->commit();
   }
