@@ -75,7 +75,15 @@ function ser_chk_update_site_result_table($sGame){
 	$hislist_list_98007=mke_hislist_num_list_98007($sGame);
 	$hislist_list_un=mke_hislist_num_list_un($sGame);
 	$db->beginTransaction();//交易機制開始
-	if(count($hislist_list_168new)>1){
+	inst_hislist_site_result_table_v2($sGame,$hislist_list_168new);
+	inst_hislist_site_result_table_v2($sGame,$hislist_list_cp908);
+	inst_hislist_site_result_table_v2($sGame,$hislist_list_91333);
+	inst_hislist_site_result_table_v2($sGame,$hislist_list_98007);
+	inst_hislist_site_result_table_v2($sGame,$hislist_list_un);
+	$db->commit();
+	/*
+	$db->beginTransaction();//交易機制開始
+	/*if(count($hislist_list_168new)>1){
 		foreach($hislist_list_168new as $key => $value){
 			inst_hislist_site_result_table($sGame,$value);
 		}
@@ -101,6 +109,7 @@ function ser_chk_update_site_result_table($sGame){
 		}
 	}
 	$db->commit();
+	*/
 }
 //取某遊戲某天的開獎結果
 /*
@@ -569,7 +578,7 @@ function inst_lottery_site_list($sGame,$lt_rst){
 	$sSQL=str_replace('[cols]',implode(',',$col),$sSQL);
 	$sSQL=str_replace('[game]',$sGame,$sSQL);
 	$sSQL=str_replace('[VALUES]',implode(",",$VALUES),$sSQL);
-	//echo $sSQL;
+	echo $sSQL;
 	$q=$db->sql_query($sSQL);
 }
 //取某期 某站台這個期數 是否存在 
@@ -804,6 +813,87 @@ function inst_hislist_site_result_table($game,$ary){
 	$sSQL=implode(" ",$aSQL);
 	$sSQL=str_replace('[cols]',implode(',',$col),$sSQL);
 	$sSQL=str_replace('[game]',$game,$sSQL);
+	$q=$db->sql_query($sSQL);
+	$ret=1;
+	return $ret;
+}
+//新增歷史期數開獎結果 站台結果表
+/*
+傳入
+	遊戲
+	漏開期數 開獎結果陣列
+	{
+	[]
+		[日期]
+		[序號]
+		[球號]
+		[總和]
+		[站台]
+	,.....
+	}
+*把開獎結果拆解組裝成 sql語法 
+*新增到資料庫
+*/
+function inst_hislist_site_result_table_v2($game,$lt_rst){
+		global $db;
+		switch($game){
+		case 'klc':
+			$col=array(
+				'draws_num'
+				,'ball_1','ball_2','ball_3','ball_4','ball_5'
+				,'ball_6','ball_7','ball_8','lottery_Time','total_sum','site'
+			);
+			break;
+		case 'ssc':
+			$col=array(
+				'draws_num'
+				,'ball_1','ball_2','ball_3','ball_4','ball_5','lottery_Time','total_sum','site'
+			);
+			break;
+		case 'pk':
+			$col=array(
+				'draws_num'
+				,'rank_1','rank_2','rank_3','rank_4','rank_5','rank_6'
+				,'rank_7','rank_8','rank_9','rank_10','lottery_Time','total_sum','site'
+			);
+			break;
+		case 'nc':
+			$col=array(
+				'draws_num'
+				,'ball_1','ball_2','ball_3','ball_4','ball_5'
+				,'ball_6','ball_7','ball_8','lottery_Time','total_sum','site'
+			);
+			break;
+		case 'kb':
+			$col=array(
+				'draws_num'
+				,'ball_1','ball_2','ball_3','ball_4','ball_5'
+				,'ball_6','ball_7','ball_8','ball_9','ball_10','ball_11'
+				,'ball_12','ball_13','ball_14','ball_15','ball_16','ball_17'
+				,'ball_18','ball_19','ball_20'
+				,'ball_fp','lottery_Time','total_sum','site'
+			);
+			break;
+	}
+	$aSQL=array();
+	$ret=0;
+	$VALUES=array();
+	$aSQL[]='REPLACE INTO site_[game]_result ([cols])';
+	$aSQL[]='VALUES';
+	//print_r($lt_rst);
+	foreach($lt_rst as $key => $value){
+		if(count($value)<count($col)){continue;}
+		$v=$value;
+		$draws=implode("','",$v);
+		$VALUES[]="('$draws')";
+	}
+	if(empty($VALUES)){return $ret;}
+	$aSQL[]='[VALUES]';
+	$sSQL=implode(" ",$aSQL);
+	$sSQL=str_replace('[cols]',implode(',',$col),$sSQL);
+	$sSQL=str_replace('[game]',$game,$sSQL);
+	$sSQL=str_replace('[VALUES]',implode(",",$VALUES),$sSQL);
+	//echo $sSQL;
 	$q=$db->sql_query($sSQL);
 	$ret=1;
 	return $ret;
