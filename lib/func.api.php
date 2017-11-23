@@ -448,6 +448,7 @@ function api_get_all_site($sGame){
   $aSQL[]='FROM site_result_enable';
   $aSQL[]='WHERE 1';
 	$aSQL[]='AND Game="[game]"';
+	$aSQL[]='AND Enable="1"';
   $sSQL=implode(' ',$aSQL);
   $sSQL=str_replace('[game]',$sGame,$sSQL);
   $db_s->sql_query($sSQL);
@@ -1374,5 +1375,17 @@ function api_restart_service_slow(){
 		$aRet['Status']='OK';
 	}
 	return $aRet;
+}
+//數字排序
+/*
+	傳入
+		$sNum=num1,num2
+	印出
+		排序後的 $sNum
+*/
+function api_num_srot($sNum){
+	$aNum=explode(',',$sNum);
+	sort($aNum);
+	echo implode(',',$aNum);
 }
 ?>

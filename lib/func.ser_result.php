@@ -1043,11 +1043,6 @@ function mke_lottery_num_list_168new($sGame){
 function mke_lottery_num_list_91333($sGame){
 	$aRet=array();
 	$lt=ser_get_result_91333($sGame);
-	/*
-	echo '<xmp>';
-	print_r($lt);
-	echo '</xmp>';
-	*/
 	if(count($lt)<1){
 		return $aRet;
 	}
@@ -1080,7 +1075,6 @@ function mke_lottery_num_list_91333($sGame){
 		);
 		$aRet['total_sum']=array_sum($aNum_kb);
 	}
-	//print_r($aRet);
 	return $aRet;
 }
 //檢查 期數是否開獎 有就把 98007 開獎結果 寫成資料庫格式
@@ -1096,11 +1090,6 @@ function mke_lottery_num_list_91333($sGame){
 function mke_lottery_num_list_98007($sGame){
 	$aRet=array();
 	$lt=ser_get_result_98007($sGame);
-	/*
-	echo '<xmp>';
-	print_r($lt);
-	echo '</xmp>';
-	*/
 	if(count($lt)<1){
 		return $aRet;
 	}
@@ -1133,7 +1122,6 @@ function mke_lottery_num_list_98007($sGame){
 		);
 		$aRet['total_sum']=array_sum($aNum_kb);
 	}
-	//print_r($aRet);
 	return $aRet;
 }
 
@@ -1196,53 +1184,68 @@ function mke_lottery_num_list_168old($sGame){
 */
 function mke_lottery_num_list_cp908($sGame){
 	$aRet=array();
-	ser_get_cookie_cp908();
+	//ser_get_cookie_cp908();
 	$lt=ser_get_result_cp908($sGame);
 	//print_r($lt);
 	//檢查 獎號是否 有抓到
 	if(count($lt)<1){
 		return $aRet;
 	}
-	switch($sGame){
+	/*
+	echo '<xmp>';
+	print_r($lt);
+	echo '</xmp>';
+	*/
+	/*switch($sGame){
 		case 'klc':
-			$periodDate=$lt['current']['periodNumberStr'];
+			$periodDate=$lt['preIssue'];
 			$periodDate=str_replace('-','',$periodDate);
 			break;
 		case 'ssc':
-			$periodDate=$lt['current']['periodNumberStr'];
+			$periodDate=$lt['preIssue'];
 			$periodDate=str_replace('-','',$periodDate);
 			break;
 		case 'nc':
-			$periodDate=$lt['current']['periodNumberStr'];
+			$periodDate=$lt['preIssue']];
 			$periodDate=str_replace('-','',$periodDate);
 			break;
 		default:
-			$periodDate=$lt['current']['periodNumber'];
+			$periodDate=$lt['preIssue']['periodNumber'];
 			break;
-	}
-	$awardNumbers=$lt['current']['awardNumbers'];
-	$sLtTime=$lt['current']['awardTime'];
-	$sAwardTime=date("Y-m-d H:i:s",strtotime($sLtTime));
+	}*/
+	$periodDate=$lt['preIssue'];
+	$awardNumbers=$lt['openNum'];
+	$sLtTime=$lt['currentOpenDateTime']/1000;
+	/*
+	echo '<xmp>';
+	echo time()."\n";
+	echo $sLtTime."\n";
+	echo '</xmp>';
+	*/
+	$sAwardTime=date("Y-m-d H:i:s",$sLtTime);
 	//檢查 抓回的獎號 是否為空結果
 	if($periodDate=='0' || $periodDate==''){
 		return $aRet;
 	}
 	$sDraws_num=$periodDate;
-	if($sGame=='nc' || $sGame=='klc'){
-		$isn=(int)substr($periodDate,8,10);
-		if($isn<10){
+	if($sGame=='nc'){
+		//$sDraws_num="20"+$periodDate;
+		/*if($isn<10){
 			$sn="0".$isn;
 		}else{
 			$sn=$isn;
-		}
-		$sDraws_num=substr($periodDate,0,8).$sn;
+		}*/
+		$sDraws_num='20'.$periodDate;
+		$isn=(int)substr($sDraws_num,9,11);
+		$sn=($isn<10)?'0'.$isn:$isn;
+		$sDraws_num=substr($sDraws_num,0,8).$sn;
 	}
 	$aDraws_num=array('draws_num'=>$sDraws_num);
-	$aNums=explode(',',$awardNumbers);
+	$aNums=$awardNumbers;
 	foreach($aNums as $k => $v){
 		$aNum[]=(int)$v;
 	}
-	if($sGame=='kb'){
+	/*if($sGame=='kb'){
 		$aNum_kb=array(
 			$aNum[0],$aNum[1],$aNum[2],$aNum[3],$aNum[4],$aNum[5],
 			$aNum[6],$aNum[7],$aNum[8],$aNum[9],$aNum[10],$aNum[11],
@@ -1250,16 +1253,16 @@ function mke_lottery_num_list_cp908($sGame){
 			$aNum[18],$aNum[19]
 		);
 		$aNum[20]=$lt['current']['pan'];
-	}
+	}*/
 	$aRet=array_merge($aDraws_num,$aNum);
 	$aRet['lottery_Time']=$sAwardTime;
 	$aRet['total_sum']=array_sum($aNum);
 	if($sGame=='pk'){
 		$aRet['total_sum']=$aNum[0]+$aNum[1];
 	}
-	if($sGame=='kb'){
+	/*if($sGame=='kb'){
 		$aRet['total_sum']=array_sum($aNum_kb);
-	}
+	}*/
 	return $aRet;
 }
 //1399p網站 當期開獎號碼 資料庫新增格式
@@ -1547,6 +1550,7 @@ function ser_get_result_168new($draws,$sGame){
 	$ch = curl_init();
 	$http = "http://api.1680210.com/$game_root/$game_do.do?issue=$draws&lotCode=$id";
 	//echo $http ;
+	$proxy_server="";
 	curl_setopt($ch,CURLOPT_URL,$http);
 	curl_setopt($ch,CURLOPT_HEADER,0);
 	curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
@@ -1555,6 +1559,11 @@ function ser_get_result_168new($draws,$sGame){
 	curl_setopt($ch,CURLOPT_CONNECTTIMEOUT_MS,1500);
 	curl_setopt($ch,CURLOPT_USERAGENT,$sUser_agent);
 	curl_setopt($ch,CURLOPT_REFERER,$sReferer);
+	if($proxy_server!=""){
+		curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1); 
+		curl_setopt($ch, CURLOPT_PROXY, "$proxy_server");
+		curl_setopt($ch, CURLOPT_PROXYUSERPWD, 'rdrd:rd01672321'); 
+	}
 	// 執行
 	$str=curl_exec($ch);
 	// 關閉CURL連線
@@ -1718,58 +1727,37 @@ function ser_get_cookie_cp908(){
 		當期結果陣列
 */
 function ser_get_result_cp908($sGame){
+	if($sGame=='kb'){return;}
 	$debug=false;
 	$aRoot_name=array();
-	$aFile=array();
-	$aAjaxhandler=array();
-	//新版網站 都放在不同的目錄
 	$aRoot_name['klc']='gdkl10';
-	$aRoot_name['ssc']='shishicai';
-	$aRoot_name['pk']='pk10';
-	$aRoot_name['nc']='xync';
-	$aRoot_name['kb']='kl8';
-	//cp908網站 每個遊戲 都有自己的檔案
-	$aFile['klc']='getGdkl10AwardData.do';
-	$aFile['ssc']='getCqsscAwardData.do';
-	$aFile['nc']='getXyncAwardData.do';
-	$aFile['pk']='getPk10AwardData.do';
-	$aFile['kb']='getkl8AwardData.do';
-	//cp908網站 每個遊戲 都有自己的命令
-	$aAjaxhandler['klc']='GetGdkl10AwardData';
-	$aAjaxhandler['ssc']='GetCqsscAwardData';
-	$aAjaxhandler['nc']='GetXyncAwardData';
-	$aAjaxhandler['pk']='GetPk10AwardData';
-	$aAjaxhandler['kb']='Getkl8AwardData';
-
+	$aRoot_name['ssc']='cqssc';
+	$aRoot_name['pk']='bjpk10';
+	$aRoot_name['nc']='cqxync';
+	//proxy
+	$proxy_server="";
+	//遊戲切換路徑
 	$sGame_root=$aRoot_name[$sGame];
-	$sGame_file=$aFile[$sGame];
-	//產生0-1 之間的亂數
-	$t = mt_rand() / mt_getrandmax();
-	$t.= mt_rand(0,999);
-	$sCookie_txt=dirname(dirname(__FILE__))."/text/cp908.txt";
-	$http = "https://www.cp908.cc/$sGame_root/$sGame_file?$t";
-	$aReferer[]="https://www.cp908.cc/";
+	//開獎檔案
+	$sGame_file="getLotteryBase.do";
+	//Referer 位置
+	$aReferer[]="https://www.cp908.cc/views/$sGame_root/";
 	$sReferer=implode('',$aReferer);
-	// 建立CURL連線
-	$ch = curl_init();
-	if($debug){
-		echo "<pre>";
-		echo $sCookie_txt;
-		echo "</pre>";
-	}
-	$aHeader[]="Host: www.cp908.cc";
+	
 	$aHeader[]="Accept: application/json, text/javascript, */*; q=0.01";
 	$aHeader[]="Accept-Encoding: gzip, deflate, br";
 	$aHeader[]="Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4";
 	$aHeader[]="Connection: keep-alive";
-	$aHeader[]="X-Requested-With: XMLHttpRequest";
 	$aUser_agent[]="Mozilla/5.0";
 	$aUser_agent[]="(Windows NT 10.0; WOW64)"; 
 	$aUser_agent[]="AppleWebKit/537.36"; 
 	$aUser_agent[]="(KHTML, like Gecko)"; 
 	$aUser_agent[]="Chrome/53.0.2785.143 Safari/537.36";
 	$sUser_agent=implode('',$aUser_agent);
-	$proxy_server="";
+	
+	$http = "https://www.cp908.cc/$sGame_file?gameCode=$sGame_root";
+	// 建立CURL連線
+	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL,$http);
 	//使用自定義 請求頭
 	curl_setopt($ch, CURLOPT_HTTPHEADER,$aHeader);
@@ -1788,15 +1776,11 @@ function ser_get_result_cp908($sGame){
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
 	//如果有設定 proxy 的話就是使用
 	if($proxy_server!=""){
+		curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1); 
 		curl_setopt($ch, CURLOPT_PROXY, "$proxy_server");
 	}
 	//這個站 有用gzip 所有要解壓
 	curl_setopt($ch, CURLOPT_ENCODING ,"gzip");
-	curl_setopt($ch, CURLOPT_CUSTOMREQUEST,'GET');
-	//cookie 檔案存在的話 就直接送
-	curl_setopt($ch, CURLOPT_COOKIEFILE, $sCookie_txt);
-	//自動設置 referer
-  curl_setopt($ch, CURLOPT_AUTOREFERER, 1); 
 	//最長等待時間 
 	curl_setopt($ch, CURLOPT_TIMEOUT_MS,3000);
 	//是否回傳檔頭
@@ -1807,6 +1791,7 @@ function ser_get_result_cp908($sGame){
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
 	// 執行
 	$str=curl_exec($ch);
+	//echo $str;
 	$info = curl_getinfo($ch);
 	if($debug){
 		echo "<pre>";

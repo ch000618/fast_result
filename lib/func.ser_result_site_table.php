@@ -28,7 +28,7 @@ function ser_ins_lottery_num_list_v2($sGame){
 	
 	$lottery_num_list91333['91333']=mke_lottery_num_list_91333($sGame);
 	
-	$lottery_num_list98007['98007']=mke_lottery_num_list_98007($sGame);
+	//$lottery_num_list98007['98007']=mke_lottery_num_list_98007($sGame);
 	
 	$lottery_num_listun['un']=mke_lottery_num_list_un($sGame);
 	
@@ -44,16 +44,15 @@ function ser_ins_lottery_num_list_v2($sGame){
 	
 	if(!empty($lottery_num_listcp908['cp908'])){
 		inst_lottery_site_list($sGame,$lottery_num_listcp908);
-	}
-		
+	}	
 	
 	if(!empty($lottery_num_list91333['91333'])){
 		inst_lottery_site_list($sGame,$lottery_num_list91333);
 	}
 	
-	if(!empty($lottery_num_list98007['98007'])){
+	/*if(!empty($lottery_num_list98007['98007'])){
 		inst_lottery_site_list($sGame,$lottery_num_list98007);
-	}
+	}*/
 	
 	if(!empty($lottery_num_listun['un'])){
 		inst_lottery_site_list($sGame,$lottery_num_listun);
@@ -72,44 +71,15 @@ function ser_chk_update_site_result_table($sGame){
 	$hislist_list_168new=mke_hislist_num_list_168new($sGame);
 	$hislist_list_cp908=mke_hislist_num_list_cp908($sGame);
 	$hislist_list_91333=mke_hislist_num_list_91333($sGame);
-	$hislist_list_98007=mke_hislist_num_list_98007($sGame);
+	//$hislist_list_98007=mke_hislist_num_list_98007($sGame);
 	$hislist_list_un=mke_hislist_num_list_un($sGame);
 	$db->beginTransaction();//交易機制開始
 	inst_hislist_site_result_table_v2($sGame,$hislist_list_168new);
 	inst_hislist_site_result_table_v2($sGame,$hislist_list_cp908);
 	inst_hislist_site_result_table_v2($sGame,$hislist_list_91333);
-	inst_hislist_site_result_table_v2($sGame,$hislist_list_98007);
+	//inst_hislist_site_result_table_v2($sGame,$hislist_list_98007);
 	inst_hislist_site_result_table_v2($sGame,$hislist_list_un);
 	$db->commit();
-	/*
-	$db->beginTransaction();//交易機制開始
-	/*if(count($hislist_list_168new)>1){
-		foreach($hislist_list_168new as $key => $value){
-			inst_hislist_site_result_table($sGame,$value);
-		}
-	}
-	if(count($hislist_list_91333)>1){
-		foreach($hislist_list_91333 as $key => $value){
-			inst_hislist_site_result_table($sGame,$value);
-		}
-	}
-	if(count($hislist_list_cp908)>1){
-		foreach($hislist_list_cp908 as $key => $value){
-			inst_hislist_site_result_table($sGame,$value);
-		}
-	}
-	if(count($hislist_list_98007)>1){
-		foreach($hislist_list_98007 as $key => $value){
-			inst_hislist_site_result_table($sGame,$value);
-		}
-	}
-	if(count($hislist_list_un)>1){
-		foreach($hislist_list_un as $key => $value){
-			inst_hislist_site_result_table($sGame,$value);
-		}
-	}
-	$db->commit();
-	*/
 }
 //取某遊戲某天的開獎結果
 /*

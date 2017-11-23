@@ -24,7 +24,8 @@ function init(){
 			$sGame=$_GET['g'];
 			$sRpt_date=date("Y-m-d");
 			//$ary=ser_get_hislist_result_cp908($sGame,$sRpt_date);
-			$ary=mke_lottery_num_list_cp908($sGame);
+			//$ary=ser_get_hislist_result_cp908($sGame,$sRpt_date);
+			$ary=mke_hislist_num_list_cp908($sGame);
 			//$ary2=mke_lottery_num_list_168new($sGame);
 			
 			echo '<xmp>';

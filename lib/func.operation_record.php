@@ -1,6 +1,5 @@
 ﻿<?php
 	include_once($web_cfg['path_lib'].'func.ips.php'); //包含测试数组$test_ips，包含1760个需要查询所在地的IP地址
-	include_once($web_cfg['path_lib'].'func.draws_result.php'); 
 //操作紀錄的相關函式
 //遊戲跟代號的對照表
 function tran_game_Num_data(){

@@ -386,79 +386,39 @@ function mke_hislist_num_list_168new($sGame,$sRpt_date=''){
 *計算總和
 *只有北京賽車是用前兩個的和
 *快樂8 有快樂飛盤的關係 總和只算前20個號碼
+*171123 cp908 資料格式大改 cp908已不做kb了
 */
 function mke_hislist_num_list_cp908($sGame){
 	$aRet=array();
-	//$dws=dws_get_now_lottery_info($sGame);
 	$sRpt_date=date('Y-m-d');
 	if($sRpt_date==''){return $aRet;}
 	$lt=ser_get_hislist_result_cp908($sGame,$sRpt_date);
-	/*
-	echo '<xmp>';
+	/*echo '<xmp>';
 	print_r($lt);
 	echo '</xmp>';
-	*/
-	$aGame_ball_cnt['klc']=8;
-	$aGame_ball_cnt['ssc']=5;
-	$aGame_ball_cnt['pk']=10;
-	$aGame_ball_cnt['nc']=8;
-	$aGame_ball_cnt['kb']=20;
-	$iBall_cnt=$aGame_ball_cnt[$sGame];
-	$data=$lt['rows'];
+	return ;*/
+	$data=$lt;
 	if(count($data)<1){return $aRet;}
 	foreach($data as $key => $value){
-		if($value['termNum']==''){continue;}
-		for($i=1;$i<=$iBall_cnt;$i++){
-			$ball_key="n".$i;
-			//echo $ball_key;
-			$num=$value[$ball_key];
-			$aNum[$i]=$num;
-		}
-		switch($sGame){
-			case 'klc':
-				$sDraws_num=$value['termNum'];
-				$sDraws_num=str_replace('-','',$sDraws_num);
-				break;
-			case 'ssc':
-				$sDraws_num=$value['termNum'];
-				$sDraws_num=str_replace('-','',$sDraws_num);
-				break;
-			case 'nc':
-				$sDraws_num=$value['termNum'];
-				$sDraws_num=str_replace('-','',$sDraws_num);
-				break;
-			default:
-				$sDraws_num=$value['termNum'];
-				break;
-		}
-		if($sGame=='nc' || $sGame=='klc'){
-			$isn=(int)substr($sDraws_num,8,10);
-			if($isn<10){
-				$sn="0".$isn;
-			}else{
-				$sn=$isn;
-			}
+		if($value['openDateTime']==''){continue;}
+		$aNum=$value['openNum'];
+		$periodDate=$value['issue'];
+		$sDraws_num=$periodDate;
+		if($sGame=='nc'){
+			$sDraws_num='20'.$periodDate;
+			$isn=(int)substr($sDraws_num,9,11);
+			$sn=($isn<10)?'0'.$isn:$isn;
 			$sDraws_num=substr($sDraws_num,0,8).$sn;
 		}
 		$aDraws_num=array('draws_num'=>$sDraws_num);
 		//將文字檔的開獎時間轉成 資料庫的格式
-		$sTime_lottery=$value['lotteryTime'];
+		$sTime_lottery=$value['openDateTime'];
 		$aRet[$key]=array_merge($aDraws_num,$aNum);
-		$aRet[$key]['lottery_Time']=$value['lotteryTime'];
+		$aRet[$key]['lottery_Time']=$value['openDateTime'];
 		//計算總和
 		$aRet[$key]['total_sum']=array_sum($aNum);
 		//只有北京賽車是用前兩個的和
 		if($sGame=='pk'){$aRet[$key]['total_sum']=$aNum[0]+$aNum[1];}
-		//kb因為有快樂飛盤的關係 總和長這樣
-		if($sGame=='kb'){
-			$nums_kb=array(
-				$aNum[0],$aNum[1],$aNum[2],$aNum[3],$aNum[4],$aNum[5],
-				$aNum[6],$aNum[7],$aNum[8],$aNum[9],$aNum[10],$aNum[11],
-				$aNum[12],$aNum[13],$aNum[14],$aNum[15],$aNum[16],$aNum[17],
-				$aNum[18],$aNum[19]
-			);
-			$aRet[$key]['total_sum']=array_sum($nums_kb);
-		}
 		$aRet[$key]['site']='cp908';
 	}
 	return $aRet;
@@ -936,50 +896,30 @@ function ser_get_hislist_result_168new($sGame,$sRpt_date=''){
 		歷史結果陣列
 */
 function ser_get_hislist_result_cp908($sGame,$sRpt_date){
+	if($sGame=='kb'){return;}
 	$debug=false;
 	$aRoot_name=array();
 	$aFile=array();
 	$aGame_count=array();
 	//新版網站 都放在不同的目錄
 	$aRoot_name['klc']='gdkl10';
-	$aRoot_name['ssc']='shishicai';
-	$aRoot_name['pk']='pk10';
-	$aRoot_name['nc']='xync';
-	$aRoot_name['kb']='kl8';
-	//cp908網站 每個遊戲 都有自己的檔案
-	$aFile['klc']="getHistoryData.do";
-	$aFile['ssc']="getHistoryData.do";
-	$aFile['nc']="getHistoryData.do";
-	$aFile['pk']="kaijiang.do?date=$sRpt_date";
-	$aFile['kb']="getHistoryData.do";
-	
-	$aGame_count['klc']=120;
-	$aGame_count['ssc']=120;
-	$aGame_count['pk']='';
-	$aGame_count['nc']=120;
-	$aGame_count['kb']=180;
-	
-	$iGame_count=$aGame_count[$sGame];
-
-	$sGame_root=$aRoot_name[$sGame];
-	$sGame_file=$aFile[$sGame];
-	$sCookie_txt=dirname(dirname(__FILE__))."/text/cp908.txt";
-	$http = "https://www.cp908.cc/$sGame_root/$sGame_file";
-	$aReferer[]="https://www.cp908.cc/";
-	$sReferer=implode('',$aReferer);
-	// 建立CURL連線
-	$ch = curl_init();
-	if($debug){
-		echo "<pre>";
-		echo $sCookie_txt;
-		echo "</pre>";
+	$aRoot_name['ssc']='cqssc';
+	$aRoot_name['pk']='bjpk10';
+	$aRoot_name['nc']='cqxync';
+	$sPattern="1,2,3,4,5,6,7,8,9,0,A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W,X,Y,Z";
+	$aPattern=explode(',',$sPattern);
+	$max=count($aPattern)-1;
+	//echo $max;
+	$sKey='';
+	$length=20;
+	for($i=0;$i<$length;$i++){
+		$sKey.=$aPattern[rand(0,$max)];
 	}
-	$aHeader[]="Host: www.cp908.cc";
+	//echo $sKey;
 	$aHeader[]="Accept: application/json, text/javascript, */*; q=0.01";
 	$aHeader[]="Accept-Encoding: gzip, deflate, br";
 	$aHeader[]="Accept-Language: zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4";
 	$aHeader[]="Connection: keep-alive";
-	$aHeader[]="X-Requested-With: XMLHttpRequest";
 	$aUser_agent[]="Mozilla/5.0";
 	$aUser_agent[]="(Windows NT 10.0; WOW64)"; 
 	$aUser_agent[]="AppleWebKit/537.36"; 
@@ -987,6 +927,18 @@ function ser_get_hislist_result_cp908($sGame,$sRpt_date){
 	$aUser_agent[]="Chrome/53.0.2785.143 Safari/537.36";
 	$sUser_agent=implode('',$aUser_agent);
 	$proxy_server="";
+	
+	$sGame_root=$aRoot_name[$sGame];
+	$sGame_file="$sRpt_date.json?$sKey";
+	
+	//Referer 位置
+	$aReferer[]="https://www.cp908.cc/views/$sGame_root/";
+	$sReferer=implode('',$aReferer);
+	
+	$http = "https://www.cp908.cc/data/$sGame_root/lotteryList/$sGame_file";
+	//echo $http;
+	// 建立CURL連線
+	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL,$http);
 	//使用自定義 請求頭
 	curl_setopt($ch, CURLOPT_HTTPHEADER,$aHeader);
@@ -1003,17 +955,12 @@ function ser_get_hislist_result_cp908($sGame,$sRpt_date){
 	curl_setopt($ch, CURLOPT_REFERER,$sReferer);
 	//是否跟隨 重新導向
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION,1);
-	if($sGame!='pk'){
-		curl_setopt($ch, CURLOPT_POST,1); // 啟用POST
-		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(array("count"=>"$iGame_count","date"=>"$sRpt_date"))); 
-	}
 	//如果有設定 proxy 的話就是使用
 	if($proxy_server!=""){
 		curl_setopt($ch, CURLOPT_PROXY, "$proxy_server");
 	}
 	//這個站 有用gzip 所有要解壓
 	curl_setopt($ch, CURLOPT_ENCODING ,"gzip");
-	curl_setopt($ch, CURLOPT_COOKIEFILE, $sCookie_txt);
 	//自動設置 referer
   curl_setopt($ch, CURLOPT_AUTOREFERER, 1); 
 	//最長等待時間 
